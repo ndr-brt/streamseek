@@ -1,38 +1,46 @@
 <template>
   <div class="hello">
-    <form>
-      <input type="text" placeholder="Username" />
-      <input type="password" placeholder="Password" />
+    <form @submit="onSubmit">
+      <input type="text" v-model="credentials.username" placeholder="Username" />
+      <input type="password" v-model="credentials.password" placeholder="Password" />
       <input type="submit" value="Login" />
     </form>
+    <span>{{ message }}</span>
   </div>
 </template>
 
 <script>
+import client from '../client'
+
 export default {
   name: 'Login',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      credentials: {
+        username: '',
+        password: ''
+      },
+      message: ''
+    }
+  },
+  methods: {
+    onSubmit (evt) {
+      evt.preventDefault()
+      let self = this
+      self.message = ''
+
+      client.login(this.credentials)
+        .then(function (result) {
+          console.log('Logged')
+          console.log(result)
+        }, function (err) {
+          console.log(err)
+          self.message = err.message
+        })
     }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1, h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
 </style>
