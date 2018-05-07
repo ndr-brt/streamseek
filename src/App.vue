@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png"/>
+    <h2>streamseek</h2>
     <router-view/>
   </div>
 </template>
