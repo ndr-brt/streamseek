@@ -1,5 +1,5 @@
 <template>
-  <div class="hello">
+  <div>
     <form @submit="onSubmit">
       <input type="text" v-model="credentials.username" placeholder="Username" />
       <input type="password" v-model="credentials.password" placeholder="Password" />
@@ -10,8 +10,6 @@
 </template>
 
 <script>
-import client from '../client'
-
 export default {
   name: 'Login',
   data () {
@@ -27,16 +25,13 @@ export default {
     onSubmit (evt) {
       evt.preventDefault()
       let self = this
-      self.message = ''
 
-      client.login(this.credentials)
-        .then(function (result) {
-          console.log('Logged')
-          console.log(result)
-        }, function (err) {
-          console.log(err)
-          self.message = err.message
-        })
+      this.$http.post('http://localhost:3000/login', this.credentials).then(response => {
+        self.message = response.body.message
+        this.$router.go('/search')
+      }, response => {
+        self.message = response.body.message
+      })
     }
   }
 }

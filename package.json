@@ -6,7 +6,7 @@
   "private": true,
   "main": "elect.js",
   "scripts": {
-    "dev": "webpack-dev-server --mode development --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "webpack-dev-server --mode development --inline --progress --config build/webpack.dev.conf.js & node src/slsk.js",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest.conf.js --coverage",
     "test": "npm run unit",
@@ -15,8 +15,10 @@
   },
   "dependencies": {
     "electron": "^2.0.0",
-    "slsk-client": "^1.0.8",
+    "npm": "^6.0.0",
+    "slsk-client": "^1.0.9",
     "vue": "^2.5.2",
+    "vue-resource": "^1.5.0",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {
