@@ -28,7 +28,7 @@ export default {
 
       this.$http.post('http://localhost:3000/login', this.credentials).then(response => {
         self.message = response.body.message
-        this.$router.go('/search')
+        this.$router.push('/search')
       }, response => {
         self.message = response.body.message
       })
