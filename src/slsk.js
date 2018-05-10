@@ -32,7 +32,18 @@ app.post('/login', function (req, res) {
     console.log('Catched error' + err);
     res.status(500).json({ message: err })
   }
+})
 
+app.post('/search', function (req, res) {
+  console.log('Search request ' + req.body)
+  this.client.search(req.body, (err, results) => {
+    if (err) {
+      res.status(500).json({ message: err })
+    }
+    else {
+      res.json(results)
+    }
+  })
 })
 
 app.listen(3000, function () {
