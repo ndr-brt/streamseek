@@ -37,7 +37,7 @@ export default {
       }
 
       this.$http.post('http://localhost:3000/search', body).then(response => {
-        self.results = response.body
+        self.results = response.body.filter(it => it.slots)
       }, response => {
         self.message = response.body.message
       })
