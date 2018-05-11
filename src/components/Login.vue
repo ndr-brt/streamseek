@@ -1,7 +1,7 @@
 <template>
   <div>
     <form @submit="onSubmit">
-      <input type="text" v-model="credentials.username" placeholder="Username" />
+      <input type="text" v-model="credentials.username" placeholder="Username" autofocus />
       <input type="password" v-model="credentials.password" placeholder="Password" />
       <input type="submit" value="Login" />
     </form>

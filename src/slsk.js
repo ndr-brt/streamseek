@@ -35,7 +35,7 @@ app.post('/login', function (req, res) {
 })
 
 app.post('/search', function (req, res) {
-  console.log('Search request ' + req.body)
+  console.log('Search request ' + req.body.req)
   this.client.search(req.body, (err, results) => {
     if (err) {
       res.status(500).json({ message: err })
@@ -44,6 +44,28 @@ app.post('/search', function (req, res) {
       res.json(results)
     }
   })
+})
+
+app.get('/play/:song', function (req, res) {
+  let request = Buffer.from(req.params.song, 'base64')
+                      .toString('ascii')
+                      .split('|')
+  console.log('Play from user ' + request[0] + ' this song: ' + request[1])
+  this.client.download({
+      file: {
+        user: request[0],
+        file: request[1]
+      },
+      //path: __dirname + '/random.mp3'
+    }, (err, data) => {
+      if (err) {
+        console.log(err)
+        res.status(500).json({ message: err })
+      }
+      else {
+        res.send(data.buffer)
+      }
+    })
 })
 
 app.listen(3000, function () {

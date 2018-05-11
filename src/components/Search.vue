@@ -1,30 +1,45 @@
 <template>
   <div>
+
+    <aplayer autoplay :music="music"/>
+
     <form>
       <form @submit="onSubmit">
-        <input type="text" v-model="search" placeholder="search" />
+        <input type="text" v-model="search" placeholder="search" autofocus />
         <input type="submit" value="Search" />
       </form>
     </form>
     <span>{{ message }}</span>
     <br/>
     <br/>
+    <div>
+      <div v-for="song in results" v-bind:key="song.file">
+        <p>User: {{ song.user }} / Speed: {{ song.speed }}</p>
+        <p>File: {{ song.file }}</p>
+        <p>Size: {{ song.size }} bytes / Bitrate: {{ song.bitrate }} bps</p>
+        <input type="button" value="Play" @click="play(song)" />
+      </div>
+    </div>
     <ul>
       <li v-for="song in results" v-bind:key="song.file">
-        {{ song }}
+
       </li>
     </ul>
   </div>
 </template>
 
 <script>
+import Aplayer from 'vue-aplayer'
+
 export default {
   name: 'Search',
+  components: { Aplayer },
   data () {
     return {
       search: '',
       message: '',
-      results: []
+      results: [],
+      music: {}
     }
   },
   methods: {
@@ -41,6 +56,13 @@ export default {
       }, response => {
         self.message = response.body.message
       })
+    },
+    play (song) {
+      this.music = {
+        title: song.file,
+        artist: 'yeah',
+        src: 'http://localhost:3000/play/' + btoa(song.user + '|' + song.file)
+      }
     }
   }
 }
