@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <aplayer autoplay :music="music"/>
+    <aplayer autoplay :music="music" :list="queue"/>
 
     <form>
       <form @submit="onSubmit">
@@ -18,12 +18,13 @@
       <div v-for="user in results" v-bind:key="user.user">
         <strong><p>User: {{ user.user }} / Speed: {{ user.speed }}</p></strong>
 
-        <div v-for="(value, key) in user.folders" v-bind:key="key">
-          <p>Folder: {{ key }}</p>
+        <div v-for="(songs, folder) in user.folders" v-bind:key="folder">
+          <p>Folder: {{ folder }}</p>
+          <input type="button" value="Play All" @click="enqueueAll(user.user, songs)" />
 
-          <div v-for="song in value" v-bind:key="song.name">
+          <div v-for="song in songs" v-bind:key="song.name">
             <p>File: {{ song.name }} - Size: {{ song.size }} bytes / Bitrate: {{ song.bitrate }} bps</p>
-            <input type="button" value="Play" @click="play(user.user, song.file)" />
+            <input type="button" value="Play" @click="enqueue(user.user, song)" />
           </div>
 
         </div>
@@ -45,6 +46,7 @@ export default {
       search: '',
       message: '',
       results: [],
+      queue: [],
       music: {}
     }
   },
@@ -63,12 +65,21 @@ export default {
         self.message = response.body.message
       })
     },
-    play (user, file) {
-      this.music = {
-        title: file,
-        artist: 'yeah',
-        src: 'http://localhost:3000/play/' + btoa(user + '|' + file)
-      }
+
+    enqueue (user, song) {
+      this.queue.push({
+        title: song.name,
+        artist: song.file,
+        src: 'http://localhost:3000/play/' + btoa(user + '|' + song.file)
+      })
+    },
+
+    enqueueAll (user, songs) {
+      songs.forEach(song => this.queue.push({
+        title: song.name,
+        artist: song.file,
+        src: 'http://localhost:3000/play/' + btoa(user + '|' + song.file)
+      }))
     }
   }
 }
