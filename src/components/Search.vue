@@ -23,8 +23,10 @@
           <input type="button" value="Play All" @click="enqueueAll(user.user, songs)" />
 
           <div v-for="song in songs" v-bind:key="song.name">
-            <p>File: {{ song.name }} - Size: {{ song.size }} bytes / Bitrate: {{ song.bitrate }} bps</p>
-            <input type="button" value="Play" @click="enqueue(user.user, song)" />
+            <p>
+              <input type="button" value="Play" @click="enqueue(user.user, song)" />
+              File: {{ song.name }} - Size: {{ song.size }} bytes / Bitrate: {{ song.bitrate }} bps
+            </p>
           </div>
 
         </div>
