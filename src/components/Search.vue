@@ -13,18 +13,15 @@
     <br/>
     <br/>
     <div>
-      <div v-for="song in results" v-bind:key="song.file">
-        <p>User: {{ song.user }} / Speed: {{ song.speed }}</p>
-        <p>File: {{ song.file }}</p>
-        <p>Size: {{ song.size }} bytes / Bitrate: {{ song.bitrate }} bps</p>
-        <input type="button" value="Play" @click="play(song)" />
+      <div v-for="user in results" v-bind:key="user.user">
+        <strong><p>User: {{ user.user }} / Speed: {{ user.speed }}</p></strong>
+        <div v-for="song in user.files" v-bind:key="song.file">
+          <p>File: {{ song.file }}</p>
+          <p>Size: {{ song.size }} bytes / Bitrate: {{ song.bitrate }} bps</p>
+          <input type="button" value="Play" @click="play(song)" />
+        </div>
       </div>
     </div>
-    <ul>
-      <li v-for="song in results" v-bind:key="song.file">
-
-      </li>
-    </ul>
   </div>
 </template>
 

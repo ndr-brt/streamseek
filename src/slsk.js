@@ -41,10 +41,29 @@ app.post('/search', function (req, res) {
       res.status(500).json({ message: err })
     }
     else {
-      res.json(results)
+      res.json(
+        Object.values(
+          results.reduce(groupByUser, {})
+        ).sort((a, b) => b.speed - a.speed)
+      )
     }
   })
 })
+
+let groupByUser = (acc, it) => {
+  var entry = acc[it.user]
+  if (!entry) {
+    acc[it.user] = {
+      user: it.user,
+      speed: it.speed,
+      slots: it.slots,
+      files: []
+    }
+  }
+
+  acc[it.user].files.push(it)
+  return acc;
+}
 
 app.get('/play/:song', function (req, res) {
   let request = Buffer.from(req.params.song, 'base64')
