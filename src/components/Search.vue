@@ -10,18 +10,27 @@
       </form>
     </form>
     <span>{{ message }}</span>
+
     <br/>
     <br/>
+
     <div>
       <div v-for="user in results" v-bind:key="user.user">
         <strong><p>User: {{ user.user }} / Speed: {{ user.speed }}</p></strong>
-        <div v-for="song in user.files" v-bind:key="song.file">
-          <p>File: {{ song.file }}</p>
-          <p>Size: {{ song.size }} bytes / Bitrate: {{ song.bitrate }} bps</p>
-          <input type="button" value="Play" @click="play(song)" />
+
+        <div v-for="(value, key) in user.folders" v-bind:key="key">
+          <p>Folder: {{ key }}</p>
+
+          <div v-for="song in value" v-bind:key="song.name">
+            <p>File: {{ song.name }} - Size: {{ song.size }} bytes / Bitrate: {{ song.bitrate }} bps</p>
+            <input type="button" value="Play" @click="play(user.user, song.file)" />
+          </div>
+
         </div>
+
       </div>
     </div>
+
   </div>
 </template>
 
@@ -54,11 +63,11 @@ export default {
         self.message = response.body.message
       })
     },
-    play (song) {
+    play (user, file) {
       this.music = {
-        title: song.file,
+        title: file,
         artist: 'yeah',
-        src: 'http://localhost:3000/play/' + btoa(song.user + '|' + song.file)
+        src: 'http://localhost:3000/play/' + btoa(user + '|' + file)
       }
     }
   }
