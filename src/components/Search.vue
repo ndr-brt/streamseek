@@ -16,28 +16,26 @@
 
     <div>
       <b-container>
-        <div v-for="user in results" v-bind:key="user.user">
-          <div v-for="(songs, folder) in user.folders" v-bind:key="folder">
-            <b-row>
-              <b-col>
-                <b-button variant="primary" @click="enqueueAll(user.user, songs)">Play {{ songs.length }} songs</b-button>
-              </b-col>
-              <b-col>
-                <strong>{{ folder }}</strong>
-              </b-col>
-              <b-col>
-                <p>User: {{ user.user }} / Speed: {{ user.speed }}</p>
-              </b-col>
-            </b-row>
-            <b-row>
-              <div v-for="song in songs" v-bind:key="song.name">
-                <p>
-                  <input type="button" value="Play" @click="enqueue(user.user, song)" />
-                  File: {{ song.name }} - Size: {{ song.size }} bytes / Bitrate: {{ song.bitrate }} bps
-                </p>
-              </div>
-            </b-row>
-          </div>
+        <div v-for="folder in results" v-bind:key="folder.folder">
+          <b-row>
+            <b-col>
+              <b-button variant="primary" @click="enqueueAll(folder.user, folder.songs)">Play {{ folder.songs.length }} songs</b-button>
+            </b-col>
+            <b-col>
+              <strong>{{ folder.name }}</strong>
+            </b-col>
+            <b-col>
+              <p>User: {{ folder.user }} / Speed: {{ folder.speed }}</p>
+            </b-col>
+          </b-row>
+          <b-row>
+            <div v-for="song in folder.songs" v-bind:key="song.name">
+              <p>
+                <input type="button" value="Play" @click="enqueue(folder.user, song)" />
+                File: {{ song.name }} - Size: {{ song.size }} bytes / Bitrate: {{ song.bitrate }} bps
+              </p>
+            </div>
+          </b-row>
         </div>
       </b-container>
     </div>

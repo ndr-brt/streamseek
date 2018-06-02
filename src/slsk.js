@@ -43,38 +43,45 @@ app.post('/search', function (req, res) {
     else {
       res.json(
         Object.values(
-          results.reduce(groupByUser, {})
+          results.reduce(groupByFolder, {})
         ).sort((a, b) => b.speed - a.speed)
       )
     }
   })
 })
 
-let groupByUser = (acc, it) => {
-  var entry = acc[it.user]
+let groupByFolder = (acc, it) => {
+  let lastSlash = it.file.lastIndexOf('\\')
+  let folder = it.file.substr(0, lastSlash)
+
+  var entry = acc[folder]
   if (!entry) {
-    acc[it.user] = {
+    acc[folder] = {
+      name: folder,
       user: it.user,
       speed: it.speed,
       slots: it.slots,
-      folders: {}
+      songs: [],
+      files: []
     }
   }
 
-  let lastSlash = it.file.lastIndexOf('\\')
-  let folder = it.file.substr(0, lastSlash)
   let name = it.file.substr(lastSlash + 1)
 
-  if (!acc[it.user].folders[folder]) {
-    acc[it.user].folders[folder] = []
+  if (name.endsWith('.mp3')) {
+    acc[folder].songs.push({
+      file: it.file,
+      size: it.size,
+      bitrate: it.bitrate,
+      name: name
+    })
+  } else {
+    acc[folder].files.push({
+      file: it.file,
+      size: it.size,
+      name: name
+    })
   }
-
-  acc[it.user].folders[folder].push({
-    file: it.file,
-    size: it.size,
-    bitrate: it.bitrate,
-    name: name
-  })
 
   return acc;
 }
