@@ -1,7 +1,8 @@
 <template>
   <div>
-
-    <aplayer autoplay :music="music" :list="queue"/>
+    <div style="position: fixed; bottom: 0px; width: 100%;">
+      <aplayer autoplay :music="music" :list="queue"/>
+    </div>
 
     <form>
       <form @submit="onSubmit">
@@ -18,23 +19,45 @@
       <b-container>
         <div v-for="folder in results" v-bind:key="folder.folder">
           <b-row>
+
             <b-col>
-              <b-button variant="primary" @click="enqueueAll(folder.user, folder.songs)">Play {{ folder.songs.length }} songs</b-button>
+              <b-button variant="primary" @click="enqueueAll(folder.user, folder.songs)">Enqueue {{ folder.songs.length }} songs</b-button>
             </b-col>
+
             <b-col>
               <strong>{{ folder.name }}</strong>
             </b-col>
+
             <b-col>
               <p>User: {{ folder.user }} / Speed: {{ folder.speed }}</p>
             </b-col>
+
           </b-row>
           <b-row>
-            <div v-for="song in folder.songs" v-bind:key="song.name">
-              <p>
-                <input type="button" value="Play" @click="enqueue(folder.user, song)" />
-                File: {{ song.name }} - Size: {{ song.size }} bytes / Bitrate: {{ song.bitrate }} bps
-              </p>
-            </div>
+
+            <b-container>
+              <div v-for="song in folder.songs" v-bind:key="song.name">
+                <b-row>
+
+                  <b-col>
+                    <b-button value="Enqueue" @click="enqueue(folder.user, song)">Enqueue</b-button>
+                  </b-col>
+
+                  <b-col>
+                    <p>{{ song.name }}</p>
+                  </b-col>
+
+                  <b-col>
+                    <p>Size: {{ song.size }} bytes</p>
+                  </b-col>
+
+                  <b-col>
+                    <p>Bitrate: {{ song.bitrate }} bps</p>
+                  </b-col>
+                </b-row>
+              </div>
+            </b-container>
+
           </b-row>
         </div>
       </b-container>

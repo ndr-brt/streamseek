@@ -68,7 +68,7 @@ let groupByFolder = (acc, it) => {
 
   let name = it.file.substr(lastSlash + 1)
 
-  if (name.endsWith('.mp3')) {
+  if (name.endsWith('.mp3') || name.endsWith('.m4a') || name.endsWith('.flac')) {
     acc[folder].songs.push({
       file: it.file,
       size: it.size,
