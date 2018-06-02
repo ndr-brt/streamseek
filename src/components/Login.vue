@@ -1,11 +1,13 @@
 <template>
   <div>
-    <form @submit="onSubmit">
-      <input type="text" v-model="credentials.username" placeholder="Username" autofocus />
-      <input type="password" v-model="credentials.password" placeholder="Password" />
-      <input type="submit" value="Login" />
-    </form>
-    <span>{{ message }}</span>
+    <b-form @submit="onSubmit">
+      <b-form-group description="Use your soulseek credentials.">
+        <b-form-input type="text" v-model="credentials.username" placeholder="Username" autofocus />
+        <b-form-input type="password" v-model="credentials.password" placeholder="Password" />
+      </b-form-group>
+      <b-button type="submit" variant="primary">Login</b-button>
+    </b-form>
+    <p>{{ message }}</p>
   </div>
 </template>
 

@@ -14,6 +14,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "bootstrap-vue": "^2.0.0-rc.11",
     "electron": "^2.0.0",
     "hls.js": "^0.9.1",
     "npm": "^6.0.0",
