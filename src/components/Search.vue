@@ -143,7 +143,7 @@ export default {
         return {
           title: song.name,
           artist: song.file,
-          src: 'http://localhost:3000/play/' + btoa(folder.user + '|' + song.file),
+          src: song.url,
           pic: folder.cover
         }
       })

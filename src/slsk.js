@@ -76,7 +76,8 @@ let groupByFolder = (acc, it) => {
     file: it.file,
     size: it.size,
     bitrate: it.bitrate,
-    name: name
+    name: name,
+    url: 'http://localhost:3000/play/' + Buffer.from(it.user + '|' + it.file).toString('base64')
   }
 
   if (name.endsWith('.mp3') || name.endsWith('.m4a') || name.endsWith('.flac')) {
@@ -85,7 +86,7 @@ let groupByFolder = (acc, it) => {
     acc[folder].images.push(file)
 
     var smallestImage = acc[folder].images.sort((a, b) => b.size - a.size)[0]
-    acc[folder].cover = 'http://localhost:3000/play/' + Buffer.from(it.user + '|' + smallestImage.file).toString('base64')
+    acc[folder].cover = smallestImage.url
   } else {
     acc[folder].files.push(file)
   }
