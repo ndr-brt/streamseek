@@ -1,7 +1,9 @@
 var express = require('express')
 var app = express()
 const slsk = require('slsk-client')
-const bodyParser = require('body-parser');
+const bodyParser = require('body-parser')
+const fs = require('fs')
+const projectFolder = require('os').homedir().concat('/.streamseek')
 
 this.client = undefined
 
@@ -116,7 +118,34 @@ app.get('/play/:song', function (req, res) {
     })
 })
 
+app.get('/fetch/:file', function (req, res) {
+  let request = Buffer.from(req.params.file, 'base64')
+                      .toString('ascii')
+                      .split('|')
+  console.log('Fetch from user ' + request[0] + ' this song: ' + request[1])
+  this.client.download({
+      file: {
+        user: request[0],
+        file: request[1],
+        path: projectFolder + '/' + request[1]
+      },
+    }, (err, data) => {
+      if (err) {
+        console.log(err)
+        res.status(500).json({ message: err })
+      }
+    })
+})
+
 app.listen(3000, function () {
+  if (!fs.existsSync(projectFolder)) {
+    fs.mkdirSync(projectFolder)
+    console.log('Created project folder on ' + projectFolder)
+  }
+  else {
+    console.log('Project folder ' + projectFolder + ' already exists')
+  }
+
   console.log('slsk client listening on port 3000!')
 })
 
