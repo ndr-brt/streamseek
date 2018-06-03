@@ -81,6 +81,9 @@ let groupByFolder = (acc, it) => {
   if (name.endsWith('.mp3') || name.endsWith('.m4a') || name.endsWith('.flac')) {
     acc[folder].songs.push(file)
   } else if (name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('png')) {
+    if (acc[folder].images.length === 0) {
+      acc[folder].cover = 'http://localhost:3000/play/' + Buffer.from(it.user + '|' + file.file).toString('base64')
+    }
     acc[folder].images.push(file)
   } else {
     acc[folder].files.push(file)

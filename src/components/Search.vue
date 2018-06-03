@@ -23,6 +23,17 @@
               </b-btn>
             </b-col>
 
+            <b-col cols="1" v-if="folder.cover">
+              <div style="height:70px; width: 70px;">
+                    <b-img-lazy width="75px" height="75px" :src="folder.cover" fluid style="
+                      width:100%;
+                      height:100%;
+                      object-position: center;
+                      object-fit: cover;
+                    "/>
+                </div>
+            </b-col>
+
             <b-col>
               <strong>{{ folder.name }}</strong>
             </b-col>
