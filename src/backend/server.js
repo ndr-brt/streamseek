@@ -101,7 +101,7 @@ app.get('/play/:song', function (req, res) {
                       .toString('ascii')
                       .split('|')
   console.log('Play from user ' + request[0] + ' this song: ' + request[1])
-  this.client.download({
+  this.client.downloadStream({
       file: {
         user: request[0],
         file: request[1]
@@ -113,7 +113,8 @@ app.get('/play/:song', function (req, res) {
         res.status(500).json({ message: err })
       }
       else {
-        res.send(data.buffer)
+        data.on('data', chunk => res.write(chunk))
+        data.on('end', () => res.end())
       }
     })
 })
@@ -126,14 +127,14 @@ app.get('/fetch/:file', function (req, res) {
   this.client.download({
       file: {
         user: request[0],
-        file: request[1],
-        path: projectFolder + '/' + request[1]
+        file: request[1]
       },
     }, (err, data) => {
       if (err) {
         console.log(err)
         res.status(500).json({ message: err })
       }
+      fs.writeFileSync(projectFolder.concat('/').concat(request[1]))
     })
 })
 
