@@ -150,10 +150,6 @@ export default {
       this.players.push({
         queue: queue
       })
-
-      if (this.players.length > 1) {
-        this.players.splice(0, 1)
-      }
     }
   }
 }

@@ -16,6 +16,5 @@ node_modules/electron/dist/electron .
 ```
 
 ### TODO
- - make play automatically on second album play
  - spinner on search
  - fetch files to local drive
