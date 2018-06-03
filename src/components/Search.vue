@@ -18,7 +18,7 @@
           <b-row>
 
             <b-col>
-              <b-button variant="primary" @click="playAll(folder.user, folder.songs)">Play {{ folder.songs.length }} songs</b-button>
+              <b-button variant="primary" @click="playAll(folder.user, folder.songs, folder.images)">Play {{ folder.songs.length }} songs</b-button>
             </b-col>
 
             <b-col>
@@ -37,7 +37,7 @@
                 <b-row>
 
                   <b-col>
-                    <b-button value="Play" @click="play(folder.user, song)">Play</b-button>
+                    <b-button value="Play" @click="play(folder.user, song, folder.images)">Play</b-button>
                   </b-col>
 
                   <b-col>
@@ -98,16 +98,21 @@ export default {
       })
     },
 
-    play (user, song) {
-      this.playAll(user, [ song ])
+    play (user, song, images) {
+      this.playAll(user, [ song ], images)
     },
 
-    playAll (user, songs) {
+    playAll (user, songs, images) {
+      var picture = images[0]
+        ? 'http://localhost:3000/play/' + btoa(user + '|' + images[0].file)
+        : undefined
+
       this.queue = []
       songs.forEach(song => this.queue.push({
         title: song.name,
         artist: song.file,
-        src: 'http://localhost:3000/play/' + btoa(user + '|' + song.file)
+        src: 'http://localhost:3000/play/' + btoa(user + '|' + song.file),
+        pic: picture
       }))
 
       this.music = this.queue[0]

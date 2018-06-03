@@ -62,25 +62,26 @@ let groupByFolder = (acc, it) => {
       speed: it.speed,
       slots: it.slots,
       songs: [],
+      images: [],
       files: []
     }
   }
 
   let name = it.file.substr(lastSlash + 1)
 
+  let file = {
+    file: it.file,
+    size: it.size,
+    bitrate: it.bitrate,
+    name: name
+  }
+
   if (name.endsWith('.mp3') || name.endsWith('.m4a') || name.endsWith('.flac')) {
-    acc[folder].songs.push({
-      file: it.file,
-      size: it.size,
-      bitrate: it.bitrate,
-      name: name
-    })
+    acc[folder].songs.push(file)
+  } else if (name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('png')) {
+    acc[folder].images.push(file)
   } else {
-    acc[folder].files.push({
-      file: it.file,
-      size: it.size,
-      name: name
-    })
+    acc[folder].files.push(file)
   }
 
   return acc;

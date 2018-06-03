@@ -16,6 +16,5 @@ node_modules/electron/dist/electron .
 ```
 
 ### TODO
- - put player fixed in bottom of the screen
- - autoplay
- - show cover
+ - fetch files to local drive
+ - show cover on search result
