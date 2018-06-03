@@ -19,7 +19,7 @@
           <b-row>
 
             <b-col cols="1">
-              <b-btn variant="primary" @click="playAll(folder.user, folder.songs, folder.images)">
+              <b-btn variant="primary" @click="playAll(folder, folder.songs)">
                 <icon name="play"></icon>
               </b-btn>
             </b-col>
@@ -67,7 +67,7 @@
                     </b-col>
 
                     <b-col cols="1">
-                      <b-btn @click="play(folder.user, song, folder.images)">
+                      <b-btn @click="play(folder, song)">
                         <icon name="play"></icon>
                       </b-btn>
                     </b-col>
@@ -126,7 +126,7 @@ export default {
 
       this.searching = true
       this.$http.post('http://localhost:3000/search', body).then(response => {
-        self.results = response.body.filter(it => it.slots)
+        self.results = response.body
         this.searching = false
       }, response => {
         self.message = response.body.message
@@ -138,17 +138,13 @@ export default {
       this.playAll(user, [ song ], images)
     },
 
-    playAll (user, songs, images) {
-      let picture = images[0]
-        ? 'http://localhost:3000/play/' + btoa(user + '|' + images[0].file)
-        : undefined
-
+    playAll (folder, songs, images) {
       let queue = songs.map(song => {
         return {
           title: song.name,
           artist: song.file,
-          src: 'http://localhost:3000/play/' + btoa(user + '|' + song.file),
-          pic: picture
+          src: 'http://localhost:3000/play/' + btoa(folder.user + '|' + song.file),
+          pic: folder.cover
         }
       })
 

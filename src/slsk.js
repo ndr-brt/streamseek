@@ -45,6 +45,7 @@ app.post('/search', function (req, res) {
         Object.values(
           results.reduce(groupByFolder, {})
         )
+        .filter(it => it.slots)
         .filter(f => f.songs.length > 0)
         .sort((a, b) => b.speed - a.speed)
       )
@@ -81,10 +82,10 @@ let groupByFolder = (acc, it) => {
   if (name.endsWith('.mp3') || name.endsWith('.m4a') || name.endsWith('.flac')) {
     acc[folder].songs.push(file)
   } else if (name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('png')) {
-    if (acc[folder].images.length === 0) {
-      acc[folder].cover = 'http://localhost:3000/play/' + Buffer.from(it.user + '|' + file.file).toString('base64')
-    }
     acc[folder].images.push(file)
+
+    var smallestImage = acc[folder].images.sort((a, b) => b.size - a.size)[0]
+    acc[folder].cover = 'http://localhost:3000/play/' + Buffer.from(it.user + '|' + smallestImage.file).toString('base64')
   } else {
     acc[folder].files.push(file)
   }
