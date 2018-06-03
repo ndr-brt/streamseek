@@ -44,7 +44,9 @@ app.post('/search', function (req, res) {
       res.json(
         Object.values(
           results.reduce(groupByFolder, {})
-        ).sort((a, b) => b.speed - a.speed)
+        )
+        .filter(f => f.songs.length > 0)
+        .sort((a, b) => b.speed - a.speed)
       )
     }
   })

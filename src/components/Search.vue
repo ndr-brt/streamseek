@@ -14,11 +14,11 @@
 
     <div>
       <b-container>
-        <div v-for="folder in results" v-bind:key="folder.folder">
+        <div v-for="(folder, index) in results" v-bind:key="folder.folder">
           <b-row>
 
             <b-col>
-              <b-button variant="primary" @click="playAll(folder.user, folder.songs, folder.images)">Play {{ folder.songs.length }} songs</b-button>
+              <b-btn variant="primary" @click="playAll(folder.user, folder.songs, folder.images)">Play {{ folder.songs.length }} songs</b-btn>
             </b-col>
 
             <b-col>
@@ -29,31 +29,39 @@
               <p>User: {{ folder.user }} / Speed: {{ folder.speed }}</p>
             </b-col>
 
+            <b-col>
+              <b-btn v-b-toggle="'collapse-' + index" variant="info">Show concent</b-btn>
+            </b-col>
+
           </b-row>
           <b-row>
 
-            <b-container>
-              <div v-for="song in folder.songs" v-bind:key="song.name">
-                <b-row>
+            <b-collapse :id="'collapse-' + index">
 
-                  <b-col>
-                    <b-button value="Play" @click="play(folder.user, song, folder.images)">Play</b-button>
-                  </b-col>
+              <b-container>
+                <div v-for="song in folder.songs" v-bind:key="song.name">
+                  <b-row>
 
-                  <b-col>
-                    <p>{{ song.name }}</p>
-                  </b-col>
+                    <b-col>
+                      <b-button value="Play" @click="play(folder.user, song, folder.images)">Play</b-button>
+                    </b-col>
 
-                  <b-col>
-                    <p>Size: {{ song.size }} bytes</p>
-                  </b-col>
+                    <b-col>
+                      <p>{{ song.name }}</p>
+                    </b-col>
 
-                  <b-col>
-                    <p>Bitrate: {{ song.bitrate }} bps</p>
-                  </b-col>
-                </b-row>
-              </div>
-            </b-container>
+                    <b-col>
+                      <p>Size: {{ song.size }} bytes</p>
+                    </b-col>
+
+                    <b-col>
+                      <p>Bitrate: {{ song.bitrate }} bps</p>
+                    </b-col>
+                  </b-row>
+                </div>
+              </b-container>
+
+            </b-collapse>
 
           </b-row>
         </div>

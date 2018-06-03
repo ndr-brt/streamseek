@@ -18,3 +18,4 @@ node_modules/electron/dist/electron .
 ### TODO
  - fetch files to local drive
  - show cover on search result
+ - hide folder with 0 songs
