@@ -92,8 +92,8 @@
       </b-container>
     </div>
 
-    <div v-if="music" style="position: fixed; bottom: 0px; width: 100%;">
-      <aplayer autoplay :music="music" :list="queue"/>
+    <div v-for="(player, index) in players" v-bind:key="index" style="position: fixed; bottom: 0px; width: 100%;">
+      <aplayer autoplay listFolded listMaxHeight="5" :music="player.queue[0]" :list="player.queue"/>
     </div>
 
   </div>
@@ -110,8 +110,7 @@ export default {
       search: '',
       message: '',
       results: [],
-      queue: undefined,
-      music: undefined
+      players: []
     }
   },
   methods: {
@@ -135,19 +134,26 @@ export default {
     },
 
     playAll (user, songs, images) {
-      var picture = images[0]
+      let picture = images[0]
         ? 'http://localhost:3000/play/' + btoa(user + '|' + images[0].file)
         : undefined
 
-      this.queue = []
-      songs.forEach(song => this.queue.push({
-        title: song.name,
-        artist: song.file,
-        src: 'http://localhost:3000/play/' + btoa(user + '|' + song.file),
-        pic: picture
-      }))
+      let queue = songs.map(song => {
+        return {
+          title: song.name,
+          artist: song.file,
+          src: 'http://localhost:3000/play/' + btoa(user + '|' + song.file),
+          pic: picture
+        }
+      })
 
-      this.music = this.queue[0]
+      this.players.push({
+        queue: queue
+      })
+
+      if (this.players.length > 1) {
+        this.players.splice(0, 1)
+      }
     }
   }
 }
