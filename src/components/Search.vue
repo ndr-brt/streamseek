@@ -7,6 +7,7 @@
         <b-btn type="submit"><icon name="search"></icon></b-btn>
       </form>
     </form>
+    <icon name="spinner" pulse v-if="searching"></icon>
     <span>{{ message }}</span>
 
     <br/>
@@ -108,6 +109,7 @@ export default {
   data () {
     return {
       search: '',
+      searching: false,
       message: '',
       results: [],
       players: []
@@ -122,10 +124,13 @@ export default {
         timeout: 2000
       }
 
+      this.searching = true
       this.$http.post('http://localhost:3000/search', body).then(response => {
         self.results = response.body.filter(it => it.slots)
+        this.searching = false
       }, response => {
         self.message = response.body.message
+        this.searching = false
       })
     },
 

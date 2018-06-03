@@ -16,5 +16,4 @@ node_modules/electron/dist/electron .
 ```
 
 ### TODO
- - spinner on search
  - fetch files to local drive
