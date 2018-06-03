@@ -1,8 +1,5 @@
 <template>
   <div>
-    <div style="position: fixed; bottom: 0px; width: 100%;">
-      <aplayer autoplay :music="music" :list="queue"/>
-    </div>
 
     <form>
       <form @submit="onSubmit">
@@ -63,6 +60,10 @@
       </b-container>
     </div>
 
+    <div v-if="music" style="position: fixed; bottom: 0px; width: 100%;">
+      <aplayer autoplay :music="music" :list="queue"/>
+    </div>
+
   </div>
 </template>
 
@@ -77,8 +78,8 @@ export default {
       search: '',
       message: '',
       results: [],
-      queue: [],
-      music: {}
+      queue: undefined,
+      music: undefined
     }
   },
   methods: {
@@ -98,19 +99,18 @@ export default {
     },
 
     enqueue (user, song) {
-      this.queue.push({
-        title: song.name,
-        artist: song.file,
-        src: 'http://localhost:3000/play/' + btoa(user + '|' + song.file)
-      })
+      this.enqueueAll(user, [ song ])
     },
 
     enqueueAll (user, songs) {
+      this.queue = []
       songs.forEach(song => this.queue.push({
         title: song.name,
         artist: song.file,
         src: 'http://localhost:3000/play/' + btoa(user + '|' + song.file)
       }))
+
+      this.music = this.queue[0]
     }
   }
 }
