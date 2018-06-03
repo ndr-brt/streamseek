@@ -18,7 +18,9 @@
           <b-row>
 
             <b-col>
-              <b-btn variant="primary" @click="playAll(folder.user, folder.songs, folder.images)">Play {{ folder.songs.length }} songs</b-btn>
+              <b-btn variant="primary" @click="playAll(folder.user, folder.songs, folder.images)">
+                <icon name="play"></icon>
+              </b-btn>
             </b-col>
 
             <b-col>
@@ -30,7 +32,9 @@
             </b-col>
 
             <b-col>
-              <b-btn v-b-toggle="'collapse-' + index" variant="info">Show concent</b-btn>
+              <b-btn v-b-toggle="'collapse-' + index" variant="info">
+                <icon name="plus"></icon>
+              </b-btn>
             </b-col>
 
           </b-row>
@@ -43,7 +47,9 @@
                   <b-row>
 
                     <b-col>
-                      <b-button value="Play" @click="play(folder.user, song, folder.images)">Play</b-button>
+                      <b-btn @click="play(folder.user, song, folder.images)">
+                        <icon name="play"></icon>
+                      </b-btn>
                     </b-col>
 
                     <b-col>
