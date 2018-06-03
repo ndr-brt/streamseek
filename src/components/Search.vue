@@ -4,7 +4,7 @@
     <form>
       <form @submit="onSubmit">
         <input type="text" v-model="search" placeholder="search" autofocus />
-        <input type="submit" value="Search" />
+        <b-btn type="submit"><icon name="search"></icon></b-btn>
       </form>
     </form>
     <span>{{ message }}</span>
@@ -17,7 +17,7 @@
         <div v-for="(folder, index) in results" v-bind:key="folder.folder">
           <b-row>
 
-            <b-col>
+            <b-col cols="1">
               <b-btn variant="primary" @click="playAll(folder.user, folder.songs, folder.images)">
                 <icon name="play"></icon>
               </b-btn>
@@ -27,11 +27,15 @@
               <strong>{{ folder.name }}</strong>
             </b-col>
 
-            <b-col>
-              <p>User: {{ folder.user }} / Speed: {{ folder.speed }}</p>
+            <b-col cols="3">
+              <p align="left">
+                <i>Songs:</i> {{ folder.songs.length }} <br/>
+                <i>User:</i> {{ folder.user }}<br />
+                <i>Speed:</i> {{ Math.trunc(folder.speed / 1024) }} Kbps
+              </p>
             </b-col>
 
-            <b-col>
+            <b-col cols="1">
               <b-btn v-b-toggle="'collapse-' + index" variant="info">
                 <icon name="plus"></icon>
               </b-btn>
@@ -46,22 +50,25 @@
                 <div v-for="song in folder.songs" v-bind:key="song.name">
                   <b-row>
 
-                    <b-col>
+                    <b-col cols="1">
+                      <span/>
+                    </b-col>
+
+                    <b-col cols="1">
                       <b-btn @click="play(folder.user, song, folder.images)">
                         <icon name="play"></icon>
                       </b-btn>
                     </b-col>
 
-                    <b-col>
+                    <b-col cols="5">
                       <p>{{ song.name }}</p>
                     </b-col>
 
-                    <b-col>
-                      <p>Size: {{ song.size }} bytes</p>
-                    </b-col>
-
-                    <b-col>
-                      <p>Bitrate: {{ song.bitrate }} bps</p>
+                    <b-col cols="5">
+                      <p>
+                        Size: {{ Math.trunc(song.size / 1024) }} KB<br/>
+                        Bitrate: {{ song.bitrate }} bps
+                      </p>
                     </b-col>
                   </b-row>
                 </div>
