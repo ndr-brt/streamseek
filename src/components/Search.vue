@@ -18,7 +18,7 @@
           <b-row>
 
             <b-col>
-              <b-button variant="primary" @click="enqueueAll(folder.user, folder.songs)">Enqueue {{ folder.songs.length }} songs</b-button>
+              <b-button variant="primary" @click="playAll(folder.user, folder.songs)">Play {{ folder.songs.length }} songs</b-button>
             </b-col>
 
             <b-col>
@@ -37,7 +37,7 @@
                 <b-row>
 
                   <b-col>
-                    <b-button value="Enqueue" @click="enqueue(folder.user, song)">Enqueue</b-button>
+                    <b-button value="Play" @click="play(folder.user, song)">Play</b-button>
                   </b-col>
 
                   <b-col>
@@ -98,11 +98,11 @@ export default {
       })
     },
 
-    enqueue (user, song) {
-      this.enqueueAll(user, [ song ])
+    play (user, song) {
+      this.playAll(user, [ song ])
     },
 
-    enqueueAll (user, songs) {
+    playAll (user, songs) {
       this.queue = []
       songs.forEach(song => this.queue.push({
         title: song.name,
