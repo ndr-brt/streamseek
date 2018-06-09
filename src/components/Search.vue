@@ -145,15 +145,31 @@ export default {
         return {
           title: song.name,
           artist: song.file,
-          src: song.url,
+          src: 'http://localhost:3000/play/' + song.key,
           pic: folder.cover
         }
       })
 
-      this.players.push({
-        queue: queue
-      })
+      async function fetchSongs (http, players) {
+        console.log('Start fetching all the songs')
+
+        for (var index = 0; index < songs.length; ++index) {
+          var song = songs[index]
+          console.log('Fetch ' + song.name)
+          await http.get('http://localhost:3000/fetch/' + song.key)
+
+          if (index === 0) {
+            console.log('First song fetched, let\'s add player!')
+            players.push({
+              queue: queue
+            })
+          }
+        }
+      }
+
+      fetchSongs(this.$http, this.players).then(data => console.log('All songs fetched'))
     }
+
   }
 }
 </script>

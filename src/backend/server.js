@@ -73,13 +73,12 @@ let groupByFolder = (acc, it) => {
   }
 
   let name = it.file.substr(lastSlash + 1)
-
   let file = {
+    key: Buffer.from(it.user + '|' + it.file).toString('base64'),
     file: it.file,
     size: it.size,
     bitrate: it.bitrate,
-    name: name,
-    url: 'http://localhost:3000/play/' + Buffer.from(it.user + '|' + it.file).toString('base64')
+    name: name
   }
 
   if (name.endsWith('.mp3') || name.endsWith('.m4a') || name.endsWith('.flac')) {
@@ -96,27 +95,38 @@ let groupByFolder = (acc, it) => {
   return acc;
 }
 
-app.get('/play/:song', function (req, res) {
-  let request = Buffer.from(req.params.song, 'base64')
+app.get('/play/:key', function (req, res) {
+  console.log('Request to play')
+  let request = Buffer.from(req.params.key, 'base64')
                       .toString('ascii')
                       .split('|')
-  console.log('Play from user ' + request[0] + ' this song: ' + request[1])
-  this.client.downloadStream({
-      file: {
-        user: request[0],
-        file: request[1]
-      },
-      //path: __dirname + '/random.mp3'
-    }, (err, data) => {
-      if (err) {
-        console.log(err)
-        res.status(500).json({ message: err })
-      }
-      else {
-        data.on('data', chunk => res.write(chunk))
-        data.on('end', () => res.end())
-      }
-    })
+  let prefetch = projectFolder.concat('/').concat(request[1])
+  if (fs.existsSync(prefetch)) {
+    console.log('Prefetch file exists: ' + prefetch)
+    var stream = fs.createReadStream(prefetch)
+    stream.on('data', chunk => res.write(chunk))
+    stream.on('end', () => res.end())
+  } else {
+    console.log('Prefetch not exists, get: ' + request[1] + ' directly from peer')
+    this.client.downloadStream({
+        file: {
+          user: request[0],
+          file: request[1]
+        },
+      }, (err, data) => {
+        if (err) {
+          console.log(err)
+          res.status(500).json({ message: err })
+        }
+        else {
+          console.log('Start getting data')
+          data.on('data', chunk => res.write(chunk))
+          data.on('end', () => {
+            res.end()
+          })
+        }
+      })
+  }
 })
 
 app.get('/fetch/:file', function (req, res) {
@@ -124,17 +134,27 @@ app.get('/fetch/:file', function (req, res) {
                       .toString('ascii')
                       .split('|')
   console.log('Fetch from user ' + request[0] + ' this song: ' + request[1])
-  this.client.download({
+  this.client.downloadStream({
       file: {
         user: request[0],
         file: request[1]
-      },
+      }
     }, (err, data) => {
       if (err) {
         console.log(err)
         res.status(500).json({ message: err })
       }
-      fs.writeFileSync(projectFolder.concat('/').concat(request[1]))
+      else {
+        var file = fs.createWriteStream(projectFolder.concat('/').concat(request[1]))
+
+        data.on('data', chunk => file.write(chunk))
+
+        data.on('end', function () {
+          file.end()
+          console.log('File ' + request[1] + ' fetched correctly')
+          res.status(200).json({ message: request[1] + ' fetched'})
+        })
+      }
     })
 })
 

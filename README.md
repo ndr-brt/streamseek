@@ -16,4 +16,7 @@ node_modules/electron/dist/electron .
 ```
 
 ### TODO
- - fetch files to local drive
+ - add a spinner while is fetching the first song
+ - show cover does not work anymore
+ - make the first song play directly from peer, and make than fetch it later 
+ - clean old players
