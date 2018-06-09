@@ -36,7 +36,9 @@
             </b-col>
 
             <b-col>
-              <strong>{{ folder.name }}</strong>
+              <p align="left">
+                <strong>{{ folder.name }}</strong>
+              </p>
             </b-col>
 
             <b-col cols="3">
