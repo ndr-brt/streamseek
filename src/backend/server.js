@@ -1,9 +1,9 @@
 var express = require('express')
 var app = express()
-const slsk = require('slsk-client')
 const bodyParser = require('body-parser')
 const fs = require('fs')
 const projectFolder = require('os').homedir().concat('/.streamseek')
+const login = require('./login')
 
 this.client = undefined
 
@@ -17,23 +17,16 @@ app.use(bodyParser.json());
 
 app.post('/login', function (req, res) {
   console.log('Login request for user ' + req.body.username)
-  try {
-    slsk.connect({
-      user: req.body.username,
-      pass: req.body.password
-    }, (err, client) => {
-      if (err) {
-        res.status(500).json({ message: err.message })
-      } else {
-        this.client = client
-        res.status(204).json({ message: 'client connected'})
-      }
+  login(req.body.username, req.body.password)
+    .then(client => {
+      this.client = client
+      console.log('Login successful');
+      res.status(204).json({ message: 'client connected' })
     })
-  }
-  catch(err) {
-    console.log('Catched error' + err);
-    res.status(500).json({ message: err })
-  }
+    .catch(err => {
+      console.log('Catched error ' + err);
+      res.status(500).json({ message: err.toString() })
+    })
 })
 
 app.post('/search', function (req, res) {
