@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const fs = require('fs')
 const projectFolder = require('os').homedir().concat('/.streamseek')
 const login = require('./login')
+const transformResponse = require('./transform-response')
 
 this.client = undefined
 
@@ -36,57 +37,10 @@ app.post('/search', function (req, res) {
       res.status(500).json({ message: err })
     }
     else {
-      res.json(
-        Object.values(
-          results.reduce(groupByFolder, {})
-        )
-        .filter(it => it.slots)
-        .filter(f => f.songs.length > 0)
-        .sort((a, b) => b.speed - a.speed)
-      )
+      res.json(transformResponse(results))
     }
   })
 })
-
-let groupByFolder = (acc, it) => {
-  let lastSlash = it.file.lastIndexOf('\\')
-  let folder = it.file.substr(0, lastSlash)
-
-  var entry = acc[folder]
-  if (!entry) {
-    acc[folder] = {
-      name: folder,
-      user: it.user,
-      speed: it.speed,
-      slots: it.slots,
-      songs: [],
-      images: [],
-      files: []
-    }
-  }
-
-  let name = it.file.substr(lastSlash + 1)
-  let file = {
-    key: Buffer.from(it.user + '|' + it.file).toString('base64'),
-    file: it.file,
-    size: it.size,
-    bitrate: it.bitrate,
-    name: name
-  }
-
-  if (name.endsWith('.mp3') || name.endsWith('.m4a') || name.endsWith('.flac')) {
-    acc[folder].songs.push(file)
-  } else if (name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('png')) {
-    acc[folder].images.push(file)
-
-    var smallestImage = acc[folder].images.sort((a, b) => b.size - a.size)[0]
-    acc[folder].cover = smallestImage.key
-  } else {
-    acc[folder].files.push(file)
-  }
-
-  return acc;
-}
 
 app.get('/play/:key', function (req, res) {
   console.log('Request to play')
