@@ -87,7 +87,7 @@ let groupByFolder = (acc, it) => {
     acc[folder].images.push(file)
 
     var smallestImage = acc[folder].images.sort((a, b) => b.size - a.size)[0]
-    acc[folder].cover = smallestImage.url
+    acc[folder].cover = smallestImage.key
   } else {
     acc[folder].files.push(file)
   }

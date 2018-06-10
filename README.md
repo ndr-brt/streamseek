@@ -17,6 +17,6 @@ node_modules/electron/dist/electron .
 
 ### TODO
  - add a spinner while is fetching the first song
- - show cover does not work anymore
- - make the first song play directly from peer, and make than fetch it later 
+ - make the first song play directly from peer, and make than fetch it later
  - clean old players
+ - file sharing (to be implemented in the client library)
