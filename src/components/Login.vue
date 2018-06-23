@@ -28,7 +28,7 @@ export default {
       evt.preventDefault()
       let self = this
 
-      this.$http.post('http://localhost:3000/login', this.credentials).then(response => {
+      this.$http.post('/api/login', this.credentials).then(response => {
         self.message = response.body.message
         this.$router.push('/search')
       }, response => {

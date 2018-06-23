@@ -105,7 +105,7 @@ app.get('/fetch/:file', function (req, res) {
     })
 })
 
-app.listen(3000, function () {
+app.listen(9090, function () {
   if (!fs.existsSync(projectFolder)) {
     fs.mkdirSync(projectFolder)
     console.log('Created project folder on ' + projectFolder)
@@ -114,7 +114,7 @@ app.listen(3000, function () {
     console.log('Project folder ' + projectFolder + ' already exists')
   }
 
-  console.log('slsk client listening on port 3000!')
+  console.log('slsk client listening on port 9090!')
 })
 
 app.on('error', (err) => {

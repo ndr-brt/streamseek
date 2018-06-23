@@ -26,7 +26,7 @@
 
             <b-col cols="1" v-if="folder.cover">
               <div style="height:70px; width: 70px;">
-                    <b-img-lazy width="75px" height="75px" :src="'http://localhost:3000/play/' + folder.cover" fluid style="
+                    <b-img-lazy width="75px" height="75px" :src="'/api/play/' + folder.cover" fluid style="
                       width:100%;
                       height:100%;
                       object-position: center;
@@ -127,7 +127,7 @@ export default {
       }
 
       this.searching = true
-      this.$http.post('http://localhost:3000/search', body).then(response => {
+      this.$http.post('/api/search', body).then(response => {
         self.results = response.body
         this.searching = false
       }, response => {
@@ -145,7 +145,7 @@ export default {
         return {
           title: song.name,
           artist: song.file,
-          src: 'http://localhost:3000/play/' + song.key,
+          src: '/api/play/' + song.key,
           pic: folder.cover
         }
       })
@@ -156,7 +156,7 @@ export default {
         for (var index = 0; index < songs.length; ++index) {
           var song = songs[index]
           console.log('Fetch ' + song.name)
-          await http.get('http://localhost:3000/fetch/' + song.key)
+          await http.get('/api/fetch/' + song.key)
 
           if (index === 0) {
             console.log('First song fetched, let\'s add player!')
