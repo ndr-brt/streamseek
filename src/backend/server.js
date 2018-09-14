@@ -73,6 +73,7 @@ app.get('/play/:key', function (req, res) {
             file.write(chunk)
           })
           data.on('end', () => {
+            console.log('File fetched')
             res.end()
             file.end()
           })
