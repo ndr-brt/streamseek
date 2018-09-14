@@ -15,7 +15,7 @@
 
     <div>
       <b-container>
-        <div v-for="(folder, index) in results" v-bind:key="folder.folder"  class="border rounded mb-2 pt-2">
+        <div v-for="(folder, index) in results" v-bind:key="folder.folder" class="border bg-light rounded mb-2 pt-2">
           <b-row>
 
             <b-col cols="1">
