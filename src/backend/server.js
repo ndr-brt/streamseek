@@ -67,9 +67,14 @@ app.get('/play/:key', function (req, res) {
         }
         else {
           console.log('Start getting data')
-          data.on('data', chunk => res.write(chunk))
+          var file = fs.createWriteStream(projectFolder.concat('/').concat(request[1]))
+          data.on('data', chunk => {
+            res.write(chunk)
+            file.write(chunk)
+          })
           data.on('end', () => {
             res.end()
+            file.end()
           })
         }
       })
