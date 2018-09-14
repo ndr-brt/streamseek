@@ -15,7 +15,7 @@
 
     <div>
       <b-container>
-        <div v-for="(folder, index) in results" v-bind:key="folder.folder">
+        <div v-for="(folder, index) in results" v-bind:key="folder.folder"  class="border rounded mb-2 pt-2">
           <b-row>
 
             <b-col cols="1">
@@ -150,24 +150,22 @@ export default {
         }
       })
 
-      async function fetchSongs (http, players) {
-        console.log('Start fetching all the songs')
+      // async function fetchSongs (http, players) {
+      //   console.log('Start fetching all the songs')
+      //
+      //   for (var index = 0; index < songs.length; ++index) {
+      //     var song = songs[index]
+      //     console.log('Fetch ' + song.name)
+      //     await http.get('/api/fetch/' + song.key)
+      //   }
+      // }
 
-        for (var index = 0; index < songs.length; ++index) {
-          var song = songs[index]
-          console.log('Fetch ' + song.name)
-          await http.get('/api/fetch/' + song.key)
+      console.log('First song fetched, let\'s add player!')
+      this.players.push({
+        queue: queue
+      })
 
-          if (index === 0) {
-            console.log('First song fetched, let\'s add player!')
-            players.push({
-              queue: queue
-            })
-          }
-        }
-      }
-
-      fetchSongs(this.$http, this.players).then(data => console.log('All songs fetched'))
+      // fetchSongs(this.$http, this.players).then(data => console.log('All songs fetched'))
     }
 
   }
