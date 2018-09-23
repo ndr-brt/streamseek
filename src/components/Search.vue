@@ -20,7 +20,7 @@
     <div>
       <b-container>
         <div v-for="(folder, index) in results" v-bind:key="folder.folder" class="border bg-light rounded my-2">
-          <b-row class="pt-2">
+          <b-row class="py-2">
 
             <b-col class="col-2 col-lg-1 col-actions flex-column">
                 <a :key="'play' + index" href="#" @click="playAll(folder, folder.songs)">
@@ -183,6 +183,10 @@ export default {
   overflow-x: hidden;
 }
 
+ul {
+  margin-bottom: 0;
+}
+
 ul li {
   list-style: none;
   text-align: left;
@@ -212,7 +216,15 @@ button > svg {
     margin: 0 10px;
   }
 }
+.col-actions {
+  display: flex;
+  justify-content: space-between;
+}
 .col-actions a:link, .col-actions a:visited {
   display: block;
+}
+.btn-outline-info {
+  display: flex;
+  align-self: center;
 }
 </style>
