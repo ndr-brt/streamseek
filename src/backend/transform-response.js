@@ -5,6 +5,18 @@ module.exports = results => Object.values(
     .filter(f => f.songs.length > 0)
     .sort((a, b) => b.speed - a.speed)
 
+let allowedAudioExtensions = [
+  'mp3',
+  'm4a',
+  'flac'
+];
+
+let allowedImageExtensions = [
+  'jpg',
+  'jpeg',
+  'png'
+];
+
 let groupByFolder = (acc, it) => {
   let descriptor = fileDescriptor(it.file)
   var folder = acc[descriptor.folder] || newFolder(descriptor.folder, it)
@@ -17,9 +29,9 @@ let groupByFolder = (acc, it) => {
     name: descriptor.name
   }
 
-  if (descriptor.extension === 'mp3' || descriptor.extension === 'm4a' || descriptor.extension === 'flac') {
+  if (allowedAudioExtensions.includes(descriptor.extension)) {
     folder.songs.push(file)
-  } else if (descriptor.extension === 'jpg' || descriptor.extension === 'jpeg' || descriptor.extension === 'png') {
+  } else if (allowedImageExtensions.includes(descriptor.extension)) {
     folder.images.push(file)
 
     var smallestImage = folder.images.sort((a, b) => b.size - a.size)[0]

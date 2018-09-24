@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <h2>streamseek</h2>
+    <h1>streamseek</h1>
+    <h2>because music is everywhere</h2>
     <router-view/>
   </div>
 </template>
@@ -18,6 +19,16 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 35px;
+  background: #fdfffc none;
+}
+#app h1 {
+  color: #2c3e50;
+  font-size: 3.4rem;
+}
+#app h2 {
+  color: #39a0ed;
+  font-size: 1.3rem;
+  margin-bottom: 35px;
 }
 </style>

@@ -1,30 +1,37 @@
 <template>
   <div>
 
-    <form>
-      <form @submit="onSubmit">
-        <input type="text" v-model="search" placeholder="search" autofocus />
-        <b-btn type="submit"><icon name="search"></icon></b-btn>
-      </form>
-    </form>
-    <icon name="spinner" pulse v-if="searching"></icon>
-    <span>{{ message }}</span>
-
-    <br/>
-    <br/>
-
+    <b-container>
+      <b-row class="justify-content-center">
+        <b-col class="col-9 col-lg-6 col-xl-4">
+          <form @submit="onSubmit">
+            <b-input-group class="mb-4 mb-lg-5">
+              <input class="form-control" type="text" v-model="search" placeholder="search" autofocus />
+              <b-input-group-append>
+                <b-btn type="submit" variant="primary"><icon name="search"></icon></b-btn>
+              </b-input-group-append>
+            </b-input-group>
+            <icon name="spinner" pulse v-if="searching"></icon>
+            <span>{{ message }}</span>
+          </form>
+        </b-col>
+      </b-row>
+    </b-container>
     <div>
       <b-container>
-        <div v-for="(folder, index) in results" v-bind:key="folder.folder" class="border bg-light rounded mb-2 pt-2">
-          <b-row>
+        <div v-for="(folder, index) in results" v-bind:key="folder.folder" class="border bg-light rounded my-2">
+          <b-row class="py-2">
 
-            <b-col cols="1">
-              <b-btn variant="primary" @click="playAll(folder, folder.songs)">
-                <icon name="play"></icon>
+            <b-col class="col-2 col-lg-1 col-actions flex-column">
+                <a :key="'play' + index" href="#" @click="playAll(folder, folder.songs)">
+                  <icon name="play-circle-o" scale="2"></icon>
+                </a>
+              <b-btn v-b-toggle="'collapse-' + index" variant="outline-info btn-sm">
+                <icon name="angle-down"></icon>
               </b-btn>
             </b-col>
 
-            <b-col cols="1" v-if="folder.cover">
+            <b-col class="col-2 col-lg-1" v-if="folder.cover">
               <div style="height:70px; width: 70px;">
                     <b-img-lazy width="75px" height="75px" :src="'/api/play/' + folder.cover" fluid style="
                       width:100%;
@@ -41,55 +48,52 @@
               </p>
             </b-col>
 
-            <b-col cols="3">
+            <b-col class="offset-1 offset-lg-0 col-11 col-lg-3 text-left">
+              <!--
               <p align="left">
                 <i>Songs:</i> {{ folder.songs.length }} <br/>
                 <i>User:</i> {{ folder.user }}<br />
                 <i>Speed:</i> {{ Math.trunc(folder.speed / 1024) }} Kbps
               </p>
+            -->
+            <ul>
+              <li><i>Songs:</i> {{ folder.songs.length }}</li>
+              <li><i>User:</i> {{ folder.user }}</li>
+              <li><i>Speed:</i> {{ Math.trunc(folder.speed / 1024) }} Kbps</li>
+            </ul>
             </b-col>
-
-            <b-col cols="1">
-              <b-btn v-b-toggle="'collapse-' + index" variant="info">
-                <icon name="plus"></icon>
-              </b-btn>
-            </b-col>
-
           </b-row>
           <b-row>
 
-            <b-collapse :id="'collapse-' + index">
+            <b-collapse class="collapse-wrapper w-100" :id="'collapse-' + index">
 
-              <b-container>
-                <div v-for="song in folder.songs" v-bind:key="song.name">
+              <!-- <b-container> -->
+                <b-container v-for="(song, idx) in folder.songs" v-bind:key="song.name">
                   <b-row>
-
-                    <b-col cols="1">
+                    <!-- <b-col cols="1">
                       <span/>
+                    </b-col> -->
+                    <b-col class="d-flex justify-content-center align-items-center" cols="1" offset="1">
+                      <a :key="'playSong' + idx + '_' + index" href="#" @click="play(folder, song)">
+                        <icon name="play-circle-o" scale="2"></icon>
+                      </a>
                     </b-col>
 
-                    <b-col cols="1">
-                      <b-btn @click="play(folder, song)">
-                        <icon name="play"></icon>
-                      </b-btn>
+                    <b-col class="d-flex align-items-center">
+                      <p class="text-left">{{ song.name }}</p>
                     </b-col>
 
-                    <b-col cols="5">
-                      <p>{{ song.name }}</p>
-                    </b-col>
-
-                    <b-col cols="5">
-                      <p>
-                        Size: {{ Math.trunc(song.size / 1024) }} KB<br/>
-                        Bitrate: {{ song.bitrate }} bps
-                      </p>
+                    <b-col class="d-flex align-items-center" cols="12" lg="3" align-self="end">
+                      <ul>
+                        <li><i>Size:</i> {{ Math.trunc(song.size / 1024) }} KB<br/></li>
+                        <li><i>Bitrate:</i> {{ song.bitrate }} bps</li>
+                      </ul>
                     </b-col>
                   </b-row>
-                </div>
-              </b-container>
+                </b-container>
+              <!-- </b-container> -->
 
             </b-collapse>
-
           </b-row>
         </div>
       </b-container>
@@ -128,6 +132,7 @@ export default {
 
       this.searching = true
       this.$http.post('/api/search', body).then(response => {
+        console.log(response.body.length)
         self.results = response.body
         this.searching = false
       }, response => {
@@ -173,4 +178,53 @@ export default {
 </script>
 
 <style scoped>
+
+.border.bg-light.rounded {
+  overflow-x: hidden;
+}
+
+ul {
+  margin-bottom: 0;
+}
+
+ul li {
+  list-style: none;
+  text-align: left;
+}
+button > svg {
+  vertical-align:middle;
+}
+.collapse-wrapper ul {
+  margin: 10px 0;
+}
+.collapse-wrapper p {
+  margin-bottom:0;
+}
+.collapse-wrapper > .container:nth-child(even) .row {
+  background: #eee none;
+}
+.collapse-wrapper > .container:nth-child(odd) .row {
+  background: #ddd none;
+}
+@media screen and (max-width: 991px) {
+  ul li {
+    display:inline-block;
+    font-size:12px;
+  }
+  ul li:not(:first-child)::before {
+    content: "|";
+    margin: 0 10px;
+  }
+}
+.col-actions {
+  display: flex;
+  justify-content: space-between;
+}
+.col-actions a:link, .col-actions a:visited {
+  display: block;
+}
+.btn-outline-info {
+  display: flex;
+  align-self: center;
+}
 </style>
