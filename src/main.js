@@ -13,7 +13,7 @@ Vue.component('icon', Icon)
 Vue.use(BootstrapVue)
 Vue.use(VuePaginate)
 
-Vue.config.productionTip = false
+Vue.config.productionTip = true
 
 /* eslint-disable no-new */
 new Vue({

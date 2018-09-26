@@ -24,6 +24,7 @@
       </span>
       <paginate-links
         for="results_list"
+        :hide-single-page="true"
         :classes="{
           'ul': ['pagination', 'd-flex', 'justify-content-center', 'my-4'],
           'li': 'page-item',
@@ -66,17 +67,10 @@
               </b-col>
 
               <b-col class="offset-1 offset-lg-0 col-11 col-lg-3 text-left">
-                <!--
-                <p align="left">
-                  <i>Songs:</i> {{ folder.songs.length }} <br/>
-                  <i>User:</i> {{ folder.user }}<br />
-                  <i>Speed:</i> {{ Math.trunc(folder.speed / 1024) }} Kbps
-                </p>
-              -->
               <ul>
-                <li><i>Songs:</i> {{ folder.songs.length }}</li>
-                <li><i>User:</i> {{ folder.user }}</li>
-                <li><i>Speed:</i> {{ Math.trunc(folder.speed / 1024) }} Kbps</li>
+                <li><icon name="folder" class="icon-folder"></icon> {{ folder.songs.length }} songs</li>
+                <li><icon name="user" class="icon-user"></icon> {{ folder.user }}</li>
+                <li><icon name="dashboard" class="icon-speed"></icon> {{ Math.trunc(folder.speed / 1024) }} Kbps</li>
               </ul>
               </b-col>
             </b-row>
@@ -116,6 +110,7 @@
         </paginate>
         <paginate-links
           for="results_list"
+          :hide-single-page="true"
           :classes="{
             'ul': ['pagination', 'd-flex', 'justify-content-center', 'my-4'],
             'li': 'page-item',
@@ -135,7 +130,7 @@
 <script>
 import Aplayer from 'vue-aplayer'
 
-import { jsonInput } from '../../json_test'
+// import { jsonInput } from '../../json_test'
 
 export default {
   name: 'Search',
@@ -147,7 +142,7 @@ export default {
       search: '',
       searching: false,
       message: '',
-      results: jsonInput,
+      results: [], // jsonInput,
       paginate: ['results_list'],
       players: []
     }
@@ -163,7 +158,7 @@ export default {
 
       this.searching = true
       this.$http.post('/api/search', body).then(response => {
-        console.log(response.body.length)
+        // console.log(response.body.length)
         self.results = response.body
         this.searching = false
       }, response => {
@@ -221,6 +216,10 @@ ul {
 ul li {
   list-style: none;
   text-align: left;
+}
+.icon-user, .icon-folder, .icon-speed {
+  vertical-align: sub;
+  margin-right: 10px;
 }
 button > svg {
   vertical-align:middle;
