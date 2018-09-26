@@ -4,6 +4,7 @@ import VueResource from 'vue-resource'
 
 import Login from '@/components/Login'
 import Search from '@/components/Search'
+import NotFound from '@/components/NotFound'
 
 Vue.use(Router)
 Vue.use(VueResource)
@@ -19,6 +20,11 @@ export default new Router({
       path: '/search',
       name: 'Search',
       component: Search
+    },
+    {
+      path: '*',
+      name: 'Not Found',
+      component: NotFound
     }
   ]
 })

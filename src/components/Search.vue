@@ -19,83 +19,109 @@
     </b-container>
     <div>
       <b-container>
-        <div v-for="(folder, index) in results" v-bind:key="folder.folder" class="border bg-light rounded my-2">
-          <b-row class="py-2">
+        <span v-if="$refs.paginator">
+        Viewing {{$refs.paginator.pageItemsCount}} results
+      </span>
+      <paginate-links
+        for="results_list"
+        :classes="{
+          'ul': ['pagination', 'd-flex', 'justify-content-center', 'my-4'],
+          'li': 'page-item',
+          'a': 'page-link'
+        }"
+      ></paginate-links>
+        <paginate
+          ref="paginator"
+          name="results_list"
+          :list="results"
+          :per="25"
+        >
+          <div v-for="(folder, index) in paginated('results_list')" v-bind:key="folder.folder" class="border bg-light rounded my-2">
+            <b-row class="py-2">
 
-            <b-col class="col-2 col-lg-1 col-actions flex-column">
-                <a :key="'play' + index" href="#" @click="playAll(folder, folder.songs)">
-                  <icon name="play-circle-o" scale="2"></icon>
-                </a>
-              <b-btn v-b-toggle="'collapse-' + index" variant="outline-info btn-sm">
-                <icon name="angle-down"></icon>
-              </b-btn>
-            </b-col>
+              <b-col class="col-2 col-lg-1 col-actions flex-column">
+                  <a :key="'play' + index" href="#" @click="playAll(folder, folder.songs)">
+                    <icon name="play-circle-o" scale="2"></icon>
+                  </a>
+                <b-btn v-b-toggle="'collapse-' + index" variant="outline-info btn-sm">
+                  <icon name="angle-down"></icon>
+                </b-btn>
+              </b-col>
 
-            <b-col class="col-2 col-lg-1" v-if="folder.cover">
-              <div style="height:70px; width: 70px;">
-                    <b-img-lazy width="75px" height="75px" :src="'/api/play/' + folder.cover" fluid style="
-                      width:100%;
-                      height:100%;
-                      object-position: center;
-                      object-fit: cover;
-                    "/>
-                </div>
-            </b-col>
+              <b-col class="col-2 col-lg-1" v-if="folder.cover">
+                <div style="height:70px; width: 70px;">
+                      <b-img-lazy width="75px" height="75px" :src="'/api/play/' + folder.cover" fluid style="
+                        width:100%;
+                        height:100%;
+                        object-position: center;
+                        object-fit: cover;
+                      "/>
+                  </div>
+              </b-col>
 
-            <b-col>
-              <p align="left">
-                <strong>{{ folder.name }}</strong>
-              </p>
-            </b-col>
+              <b-col>
+                <p align="left">
+                  <strong>{{ folder.name }}</strong>
+                </p>
+              </b-col>
 
-            <b-col class="offset-1 offset-lg-0 col-11 col-lg-3 text-left">
-              <!--
-              <p align="left">
-                <i>Songs:</i> {{ folder.songs.length }} <br/>
-                <i>User:</i> {{ folder.user }}<br />
-                <i>Speed:</i> {{ Math.trunc(folder.speed / 1024) }} Kbps
-              </p>
-            -->
-            <ul>
-              <li><i>Songs:</i> {{ folder.songs.length }}</li>
-              <li><i>User:</i> {{ folder.user }}</li>
-              <li><i>Speed:</i> {{ Math.trunc(folder.speed / 1024) }} Kbps</li>
-            </ul>
-            </b-col>
-          </b-row>
-          <b-row>
+              <b-col class="offset-1 offset-lg-0 col-11 col-lg-3 text-left">
+                <!--
+                <p align="left">
+                  <i>Songs:</i> {{ folder.songs.length }} <br/>
+                  <i>User:</i> {{ folder.user }}<br />
+                  <i>Speed:</i> {{ Math.trunc(folder.speed / 1024) }} Kbps
+                </p>
+              -->
+              <ul>
+                <li><i>Songs:</i> {{ folder.songs.length }}</li>
+                <li><i>User:</i> {{ folder.user }}</li>
+                <li><i>Speed:</i> {{ Math.trunc(folder.speed / 1024) }} Kbps</li>
+              </ul>
+              </b-col>
+            </b-row>
+            <b-row>
 
-            <b-collapse class="collapse-wrapper w-100" :id="'collapse-' + index">
+              <b-collapse class="collapse-wrapper w-100" :id="'collapse-' + index">
 
-              <!-- <b-container> -->
-                <b-container v-for="(song, idx) in folder.songs" v-bind:key="song.name">
-                  <b-row>
-                    <!-- <b-col cols="1">
-                      <span/>
-                    </b-col> -->
-                    <b-col class="d-flex justify-content-center align-items-center" cols="1" offset="1">
-                      <a :key="'playSong' + idx + '_' + index" href="#" @click="play(folder, song)">
-                        <icon name="play-circle-o" scale="2"></icon>
-                      </a>
-                    </b-col>
+                <!-- <b-container> -->
+                  <b-container v-for="(song, idx) in folder.songs" v-bind:key="song.name">
+                    <b-row>
+                      <!-- <b-col cols="1">
+                        <span/>
+                      </b-col> -->
+                      <b-col class="d-flex justify-content-center align-items-center" cols="1" offset="1">
+                        <a :key="'playSong' + idx + '_' + index" href="#" @click="play(folder, song)">
+                          <icon name="play-circle-o" scale="2"></icon>
+                        </a>
+                      </b-col>
 
-                    <b-col class="d-flex align-items-center">
-                      <p class="text-left">{{ song.name }}</p>
-                    </b-col>
+                      <b-col class="d-flex align-items-center">
+                        <p class="text-left">{{ song.name }}</p>
+                      </b-col>
 
-                    <b-col class="d-flex align-items-center" cols="12" lg="3" align-self="end">
-                      <ul>
-                        <li><i>Size:</i> {{ Math.trunc(song.size / 1024) }} KB<br/></li>
-                        <li><i>Bitrate:</i> {{ song.bitrate }} bps</li>
-                      </ul>
-                    </b-col>
-                  </b-row>
-                </b-container>
-              <!-- </b-container> -->
+                      <b-col class="d-flex align-items-center" cols="12" lg="3" align-self="end">
+                        <ul>
+                          <li><i>Size:</i> {{ Math.trunc(song.size / 1024) }} KB<br/></li>
+                          <li><i>Bitrate:</i> {{ song.bitrate }} bps</li>
+                        </ul>
+                      </b-col>
+                    </b-row>
+                  </b-container>
+                <!-- </b-container> -->
 
-            </b-collapse>
-          </b-row>
-        </div>
+              </b-collapse>
+            </b-row>
+          </div>
+        </paginate>
+        <paginate-links
+          for="results_list"
+          :classes="{
+            'ul': ['pagination', 'd-flex', 'justify-content-center', 'my-4'],
+            'li': 'page-item',
+            'a': 'page-link'
+          }"
+        ></paginate-links>
       </b-container>
     </div>
 
@@ -109,15 +135,20 @@
 <script>
 import Aplayer from 'vue-aplayer'
 
+import { jsonInput } from '../../json_test'
+
 export default {
   name: 'Search',
-  components: { Aplayer },
+  components: {
+    Aplayer: Aplayer
+  },
   data () {
     return {
       search: '',
       searching: false,
       message: '',
-      results: [],
+      results: jsonInput,
+      paginate: ['results_list'],
       players: []
     }
   },
@@ -227,4 +258,5 @@ button > svg {
   display: flex;
   align-self: center;
 }
+
 </style>
