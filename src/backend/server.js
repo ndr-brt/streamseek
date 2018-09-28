@@ -5,6 +5,10 @@ const fs = require('fs')
 const projectFolder = require('os').homedir().concat('/.streamseek')
 const login = require('./login')
 const transformResponse = require('./transform-response')
+const jsonServer = require('json-server')
+const jsonRouter = jsonServer.router(require('os').homedir().concat('./json_test.json'))
+
+app.use('/results', jsonServer.router(jsonRouter)
 
 this.client = undefined
 
@@ -15,6 +19,11 @@ app.use(function(req, res, next) {
 });
 
 app.use(bodyParser.json());
+
+app.get('/results/:start/:limit', function (req, res) {
+  console.log('Request to paging results')
+  res.status(200).json({ message: 'get request to paging results' })
+}
 
 app.post('/login', function (req, res) {
   console.log('Login request for user ' + req.body.username)

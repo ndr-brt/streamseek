@@ -7,11 +7,11 @@ import BootstrapVue from 'bootstrap-vue'
 import Icon from 'vue-awesome'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import VuePaginate from 'vue-paginate'
+import { Pagination } from 'bootstrap-vue/es/components'
 
 Vue.component('icon', Icon)
 Vue.use(BootstrapVue)
-Vue.use(VuePaginate)
+Vue.use(Pagination)
 
 Vue.config.productionTip = true
 
