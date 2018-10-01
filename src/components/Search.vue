@@ -24,12 +24,12 @@
         <b-row v-if="results.length">
           <b-col>
             <span>
-            Viewing {{ results.length }} results
+            Found {{ results.length }} results.
           </span>
           </b-col>
         </b-row>
 
-        <b-pagination size="md" :total-rows="results.length" v-model="currentPage" :per-page="10"></b-pagination>
+        <b-pagination-nav align="center" size="md" :link-gen="linkGen" :number-of-pages="Math.round(results.length / limit)" v-model="currentPage" />
         <div v-for="(folder, index) in results" v-bind:key="folder.folder" class="border bg-light rounded my-2">
           <b-row class="py-2">
 
@@ -113,11 +113,6 @@
 
 <script>
 import Aplayer from 'vue-aplayer'
-import http from 'http'
-
-// importing fake data for testing purposes
-// import { jsonInput } from '../../json_test'
-// console.log(JSON.stringify(jsonInput))
 
 export default {
   name: 'Search',
@@ -130,8 +125,8 @@ export default {
       searching: false,
       message: '',
       currentPage: 1,
-      limit: 5,
-      results: [],
+      limit: 3,
+      results: require('../../json_test.json').results,
       players: []
     }
   },
@@ -147,7 +142,7 @@ export default {
       this.searching = true
       this.$http.post('/api/search', body).then(response => {
         // console.log(response.body.length)
-        self.results = response.body
+        self.results = response.body.results
         this.searching = false
       }, response => {
         self.message = response.body.message
@@ -155,6 +150,9 @@ export default {
       })
     },
 
+    linkGen (pageNum) {
+      return '#page/' + pageNum + '/foobar'
+    },
     play (user, song, images) {
       this.playAll(user, [ song ], images)
     },
@@ -189,32 +187,7 @@ export default {
 
   },
   mounted (currentPage) {
-    var options = {
-      host: 'localhost',
-      port: 8080,
-      path: '/api/results/20/10',
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-    var t = this
-
-    http.request(options, function (err, res) {
-      if (err) {
-        console.log('ERROR:')
-        console.log(err)
-        t.results = []
-      } else {
-        console.log('STATUS: ' + res.statusCode)
-        console.log('HEADERS: ' + JSON.stringify(res.headers))
-        res.setEncoding('utf8')
-        res.on('data', function (chunk) {
-          // console.log('BODY: ' + chunk)
-          t.results = chunk
-        })
-      }
-    }).end()
+    console.log('page mounted!')
   }
 }
 

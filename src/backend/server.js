@@ -5,8 +5,7 @@ const fs = require('fs')
 const projectFolder = require('os').homedir().concat('/.streamseek')
 const login = require('./login')
 const transformResponse = require('./transform-response')
-const jsonServer = require('json-server')
-const jsonRouter = jsonServer.router(require('os').homedir().concat('./json_test.json'))
+const jsonData = require('./jsondata')
 
 this.client = undefined
 
@@ -17,11 +16,15 @@ app.use(function(req, res, next) {
 });
 
 app.use(bodyParser.json());
-app.use('/results', jsonRouter)
 
-app.get('/results/:start/:limit', function (req, res) {
-  console.log('Request to paging results')
-  res.status(200).json({ message: 'get request to paging results' })
+app.get('/results/:page/:limit', function(req, res) {
+  let page = req.param.page || 1,
+      limit = req.param.limit || 10,
+      jsonOut = {
+        totalResults: jsonData.count(),
+        results: jsonData(page,limit)
+      }
+  res.status(200).json(jsonOut)
 })
 
 app.post('/login', function (req, res) {
@@ -45,7 +48,18 @@ app.post('/search', function (req, res) {
       res.status(500).json({ message: err })
     }
     else {
-      res.json(transformResponse(results))
+      let transformedResponse = {
+        results: transformResponse(results)
+      }
+      jsonData.write(transformedResponse).then(function() {
+        let jsonOut = {
+          totalResults: jsonData.count(),
+          results: jsonData(1,10)
+        }
+        res.json(jsonOut)
+      })
+
+      // res.json(transformResponse(results))
     }
   })
 })
