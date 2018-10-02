@@ -7,6 +7,7 @@ const login = require('./login')
 const transformResponse = require('./transform-response')
 var jsonData = require('./jsondata')
 this.client = undefined
+this.jsonDB = new jsonData()
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -20,8 +21,8 @@ app.get('/results/:page/:limit', function(req, res) {
   let page = req.param.page || 1,
       limit = req.param.limit || 10,
       jsonOut = {
-        totalResults: jsonData.count(),
-        results: jsonData.getPage(page, limit)
+        totalResults: this.jsonDB.count(),
+        results: this.jsonDB.getPage(page, limit)
       }
   res.status(200).json(jsonOut)
 })
@@ -47,15 +48,14 @@ app.post('/search', function (req, res) {
       res.status(500).json({ message: err })
     }
     else {
-      let jsonD = new jsonData(),
-          tmpResults = {
-            results: transformResponse(results)
-          }
-      jsonD.write(req.body.req, tmpResults, (err) => {
+      let tmpResults = {
+        results: transformResponse(results)
+      }
+      this.jsonDB.write(req.body.req, tmpResults, (err) => {
         if (err) return res.status(500).json({ message: err })
         res.status(200).json({
-          count: jsonD.count(),
-          pagedResults: jsonD.getPage(1,10)
+          count: this.jsonDB.count(),
+          pagedResults: this.jsonDB.getPage(1,10)
         })
       })
       // res.json(transformResponse(results))
