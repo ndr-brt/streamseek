@@ -21,7 +21,7 @@ app.get('/results/:page/:limit', function(req, res) {
       limit = req.param.limit || 10,
       jsonOut = {
         totalResults: jsonData.count(),
-        results: jsonData.page(page,limit)
+        results: jsonData.getPage(page, limit)
       }
   res.status(200).json(jsonOut)
 })
@@ -35,30 +35,29 @@ app.post('/login', function (req, res) {
       res.status(204).json({ message: 'client connected' })
     })
     .catch(err => {
-      console.log('Catched error ' + err);
+      console.log('Catched error ' + err)
       res.status(401).json({ message: err.toString() })
     })
 })
 
 app.post('/search', function (req, res) {
   console.log('Search request ' + req.body.req)
-
-  // console.log("in post, prima: " + typeof t.write)
   this.client.search(req.body, (err, results) => {
     if (err) {
       res.status(500).json({ message: err })
     }
     else {
-      console.log("in post, nella response: " + typeof jsonData.write)
-      // console.log(transformResponse(results))
-      jsonData.write(transformResponse(results), function(err){
-        if (err) return res.status(500).json({ message: err})
+      let jsonD = new jsonData(),
+          tmpResults = {
+            results: transformResponse(results)
+          }
+      jsonD.write(req.body.req, tmpResults, (err) => {
+        if (err) return res.status(500).json({ message: err })
         res.status(200).json({
-          count: jsonData.count(),
-          pagedResults: jsonData.page(1,10)
+          count: jsonD.count(),
+          pagedResults: jsonD.getPage(1,10)
         })
       })
-
       // res.json(transformResponse(results))
     }
   })

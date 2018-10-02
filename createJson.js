@@ -1,4 +1,5 @@
-var fs = require('fs');
+const fs = require('fs');
+const projectFolder = require('os').homedir().concat(path.sep + '.streamseek')
 
 var results = {results: []};
 var limitFolder = Math.floor((Math.random() * 80) + 20);
@@ -10,7 +11,7 @@ for (var i=0;i<limitFolder;i++) {
     speed: Math.floor((Math.random() * 1000000) + 1000),
     songs: []
   }
-  var limitSongs = Math.floor((Math.random() * 20) + 8);
+  var limitSongs = Math.floor((Math.random() * 14) + 5);
 
   for (var j=0;j<limitSongs;j++) {
     var song = {
