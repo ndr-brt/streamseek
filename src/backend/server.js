@@ -5,8 +5,7 @@ const fs = require('fs')
 const projectFolder = require('os').homedir().concat('/.streamseek')
 const login = require('./login')
 const transformResponse = require('./transform-response')
-const jsonData = require('./jsondata')
-
+var jsonData = require('./jsondata')
 this.client = undefined
 
 app.use(function(req, res, next) {
@@ -22,7 +21,7 @@ app.get('/results/:page/:limit', function(req, res) {
       limit = req.param.limit || 10,
       jsonOut = {
         totalResults: jsonData.count(),
-        results: jsonData(page,limit)
+        results: jsonData.page(page,limit)
       }
   res.status(200).json(jsonOut)
 })
@@ -37,26 +36,27 @@ app.post('/login', function (req, res) {
     })
     .catch(err => {
       console.log('Catched error ' + err);
-      res.status(500).json({ message: err.toString() })
+      res.status(401).json({ message: err.toString() })
     })
 })
 
 app.post('/search', function (req, res) {
   console.log('Search request ' + req.body.req)
+
+  // console.log("in post, prima: " + typeof t.write)
   this.client.search(req.body, (err, results) => {
     if (err) {
       res.status(500).json({ message: err })
     }
     else {
-      let transformedResponse = {
-        results: transformResponse(results)
-      }
-      jsonData.write(transformedResponse).then(function() {
-        let jsonOut = {
-          totalResults: jsonData.count(),
-          results: jsonData(1,10)
-        }
-        res.json(jsonOut)
+      console.log("in post, nella response: " + typeof jsonData.write)
+      // console.log(transformResponse(results))
+      jsonData.write(transformResponse(results), function(err){
+        if (err) return res.status(500).json({ message: err})
+        res.status(200).json({
+          count: jsonData.count(),
+          pagedResults: jsonData.page(1,10)
+        })
       })
 
       // res.json(transformResponse(results))

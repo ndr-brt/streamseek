@@ -3,16 +3,13 @@ const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
 const filename = 'json_test.json'
 
-// module.exports = {
-let jsonData = {
+var jsonData = module.exports = {
+// let jsonData = {
   checkFile: function() {
     return fs.existsSync(filename)
   },
-  write: function(content) {
-    fs.writeFile(filename, JSON.stringify(content), function(err) {
-        if (err) return false
-        return true
-    })
+  write: function(content, cb) {
+    fs.writeFile(filename, JSON.stringify(content), cb)
   },
   db: low(new FileSync(filename)),
   page: 1,
@@ -40,7 +37,7 @@ let jsonData = {
   }
 }
 
-console.log(jsonData.checkFile())
- console.log(jsonData.count())
+// console.log(jsonData.checkFile())
+// console.log(jsonData.count())
 // console.log(obj.all())
-console.log(jsonData.page())
+// console.log(jsonData.page())

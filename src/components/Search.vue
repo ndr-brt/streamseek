@@ -29,7 +29,12 @@
           </b-col>
         </b-row>
 
-        <b-pagination-nav align="center" size="md" :link-gen="linkGen" :number-of-pages="Math.round(results.length / limit)" v-model="currentPage" />
+        <b-pagination-nav
+          align="center"
+          size="md"
+          :link-gen="linkGen"
+          :number-of-pages="Math.round(results.length / limit)"
+          v-model="currentPage" />
         <div v-for="(folder, index) in results" v-bind:key="folder.folder" class="border bg-light rounded my-2">
           <b-row class="py-2">
 
@@ -126,7 +131,7 @@ export default {
       message: '',
       currentPage: 1,
       limit: 3,
-      results: require('../../json_test.json').results,
+      results: [], // require('../../json_test.json').results,
       players: []
     }
   },
@@ -141,7 +146,7 @@ export default {
 
       this.searching = true
       this.$http.post('/api/search', body).then(response => {
-        // console.log(response.body.length)
+        console.log(response.body)
         self.results = response.body.results
         this.searching = false
       }, response => {
