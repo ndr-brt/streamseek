@@ -22,6 +22,11 @@ export default new Router({
       component: Search
     },
     {
+      path: '/results/:page/:limit',
+      name: 'Results',
+      component: Search
+    },
+    {
       path: '*',
       name: 'Not Found',
       component: NotFound

@@ -21,10 +21,10 @@
     </b-container>
     <div>
       <b-container>
-        <b-row v-if="results.length">
+        <b-row class="my-3" v-if="results.count && results.count > 0">
           <b-col>
             <span>
-            Found {{ results.length }} results.
+            Found {{ results.count }} results.
           </span>
           </b-col>
         </b-row>
@@ -32,10 +32,11 @@
         <b-pagination-nav
           align="center"
           size="md"
+          :use-router="true"
           :link-gen="linkGen"
-          :number-of-pages="Math.round(results.length / limit)"
+          :number-of-pages="Math.round(results.count / limit)"
           v-model="currentPage" />
-        <div v-for="(folder, index) in results" v-bind:key="folder.folder" class="border bg-light rounded my-2">
+        <div v-for="(folder, index) in results.pagedResults" v-bind:key="folder.folder" class="border bg-light rounded my-2">
           <b-row class="py-2">
 
             <b-col class="col-2 col-lg-1 col-actions flex-column">
@@ -133,9 +134,24 @@ export default {
       searching: false,
       message: '',
       currentPage: 1,
-      limit: 3,
+      limit: 10,
       results: [], // jsonData.getPage(1, 10),
       players: []
+    }
+  },
+  watch: {
+    '$route' (to, from) {
+      if (to.name === 'Results') {
+        this.searching = true
+        this.$http.get('/api' + to.path).then(response => {
+          console.log('richiesta ajax ok: ' + response.body.totalResults)
+          this.results = response.body
+          this.searching = false
+        }, response => {
+          this.message = response.body.message
+          this.searching = false
+        })
+      }
     }
   },
   methods: {
@@ -149,8 +165,7 @@ export default {
 
       this.searching = true
       this.$http.post('/api/search', body).then(response => {
-        console.log(response.body)
-        self.results = response.body.results
+        self.results = response.body
         this.searching = false
       }, response => {
         self.message = response.body.message
@@ -159,7 +174,7 @@ export default {
     },
 
     linkGen (pageNum) {
-      return '#page/' + pageNum + '/foobar'
+      return '/results/' + pageNum + '/' + this.limit
     },
     play (user, song, images) {
       this.playAll(user, [ song ], images)

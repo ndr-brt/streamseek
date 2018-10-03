@@ -5,9 +5,8 @@ const fs = require('fs')
 const projectFolder = require('os').homedir().concat('/.streamseek')
 const login = require('./login')
 const transformResponse = require('./transform-response')
-var jsonData = require('./jsondata')
+var jsonDB = new (require('./jsondata'))()
 this.client = undefined
-this.jsonDB = new jsonData()
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -18,11 +17,12 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json());
 
 app.get('/results/:page/:limit', function(req, res) {
+  console.log('in route results/' + req.param.page + '/' + req.param.limit)
   let page = req.param.page || 1,
       limit = req.param.limit || 10,
       jsonOut = {
-        totalResults: this.jsonDB.count(),
-        results: this.jsonDB.getPage(page, limit)
+        totalResults: jsonDB.count(),
+        results: jsonDB.getPage(page, limit)
       }
   res.status(200).json(jsonOut)
 })
@@ -43,24 +43,25 @@ app.post('/login', function (req, res) {
 
 app.post('/search', function (req, res) {
   console.log('Search request ' + req.body.req)
-  this.client.search(req.body, (err, results) => {
-    if (err) {
-      res.status(500).json({ message: err })
-    }
-    else {
-      let tmpResults = {
-        results: transformResponse(results)
-      }
-      this.jsonDB.write(req.body.req, tmpResults, (err) => {
-        if (err) return res.status(500).json({ message: err })
-        res.status(200).json({
-          count: this.jsonDB.count(),
-          pagedResults: this.jsonDB.getPage(1,10)
-        })
-      })
-      // res.json(transformResponse(results))
-    }
+  res.status(200).json({
+    count: jsonDB.count(),
+    pagedResults: jsonDB.getPage(1,10)
   })
+  // this.client.search(req.body, (err, results) => {
+  //   if (err) {
+  //     res.status(500).json({ message: err })
+  //   }
+  //   else {
+  //     jsonDB.write(req.body.req, {
+  //       results: transformResponse(results)
+  //     })
+  //     res.status(200).json({
+  //       count: jsonDB.count(),
+  //       pagedResults: jsonDB.getPage(1,10)
+  //     })
+  //     // res.json(transformResponse(results))
+  //   }
+  // })
 })
 
 app.get('/play/:key', function (req, res) {
@@ -140,7 +141,6 @@ app.listen(9090, function () {
   else {
     console.log('Project folder ' + projectFolder + ' already exists')
   }
-
   console.log('slsk client listening on port 9090!')
 })
 
