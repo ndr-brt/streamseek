@@ -12,7 +12,7 @@
               </b-input-group-append>
             </b-input-group>
             <div class="overlay-spinner" v-if="searching">
-              <icon scale="4" name="spinner" pulse></icon>
+              <icon scale="3" name="spinner" pulse></icon>
             </div>
             <span>{{ message }}</span>
           </form>
@@ -21,13 +21,6 @@
     </b-container>
     <div>
       <b-container>
-        <b-row class="my-4" v-if="results.count && results.count > 0">
-          <b-col>
-            <span>
-            Found {{ results.count }} results.
-          </span>
-          </b-col>
-        </b-row>
 
         <b-pagination-nav
           align="center"
@@ -35,8 +28,21 @@
           size="md"
           :use-router="true"
           :link-gen="linkGen"
-          :number-of-pages="Math.round(results.count / limit)"
+          :number-of-pages="results.pageCount"
           v-model="currentPage" />
+
+        <b-row class="mt-4 mb-1" v-if="results.count && results.count > 0">
+          <b-col class="col-12 col-lg-6 text-center text-lg-left">
+            <span>
+            {{ results.count }} results
+          </span>
+          </b-col>
+          <b-col class="col-12 col-lg-6 text-center text-lg-right">
+            <span>
+              page {{ currentPage }} of {{ results.pageCount }}
+            </span>
+          </b-col>
+        </b-row>
 
         <div v-for="(folder, index) in results.pagedResults" v-bind:key="folder.folder" class="border bg-light rounded my-2">
           <b-row class="py-2">
@@ -71,7 +77,7 @@
             <ul>
               <li><icon scale="1.3" v-b-tooltip title="Songs" placement="top" name="folder" class="icon-folder"></icon> {{ folder.songs.length }} songs</li>
               <li><icon scale="1.3" v-b-tooltip title="User" placement="top" name="user" class="icon-user"></icon> {{ folder.user }}</li>
-              <li><icon scale="1.3" v-b-tooltip title="Speed" placement="top" name="dashboard" class="icon-speed"></icon> {{ Math.trunc(folder.speed / 1024) }} Kbps</li>
+              <li><icon scale="1.3" v-b-tooltip title="Speed" placement="top" name="dashboard" class="icon-speed"></icon> {{ folder.speed }} Kbps</li>
             </ul>
             </b-col>
           </b-row>
@@ -97,7 +103,7 @@
 
                     <b-col class="d-flex align-items-center" cols="12" lg="3" align-self="end">
                       <ul>
-                        <li><icon scale="1.3" v-b-tooltip title="File size" placement="top" name="file-audio-o" class="icon-size"></icon> {{ Math.trunc(song.size / 1024) }} KB<br/></li>
+                        <li><icon scale="1.3" v-b-tooltip title="File size" placement="top" name="file-audio-o" class="icon-size"></icon> {{ song.size }} KB<br/></li>
                         <li><icon scale="1.3" v-b-tooltip title="Bitrate" placement="top" name="area-chart" class="icon-chart"></icon> {{ song.bitrate }} bps</li>
                       </ul>
                     </b-col>
@@ -115,7 +121,7 @@
           size="md"
           :use-router="true"
           :link-gen="linkGen"
-          :number-of-pages="Math.round(results.count / limit)"
+          :number-of-pages="results.pageCount"
           v-model="currentPage" />
 
       </b-container>
@@ -155,8 +161,10 @@ export default {
       if (to.name === 'Results') {
         this.searching = true
         this.$http.get('/api' + to.path).then(response => {
-          console.log('richiesta ajax ok: ' + response.body.count)
+          // console.log('XHR to /api' + to.path + ' returns ' + response.statusCode)
+          // console.log(response.body.count)
           this.results = response.body
+          this.currentPage = response.body.page
           this.searching = false
         }, response => {
           this.message = response.body.message
@@ -177,6 +185,7 @@ export default {
       this.$http.post('/api/search', body).then(response => {
         self.results = response.body
         this.searching = false
+        this.$router.push('/results/' + response.body.page + '/' + response.body.limit)
       }, response => {
         self.message = response.body.message
         this.searching = false

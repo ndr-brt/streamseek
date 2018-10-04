@@ -8,10 +8,10 @@ const login = require('./login')
 const transformResponse = require('./transform-response')
 var jsonDB = new (require('./jsondata'))()
 // AB for testing only:
-function bufferFile(absPath) {
-  return fs.readFileSync(absPath, { encoding: 'utf8' });
-}
-let fakeData = bufferFile(projectFolder + '/json_test.json')
+// function bufferFile(absPath) {
+//   return fs.readFileSync(absPath, { encoding: 'utf8' });
+// }
+// let fakeData = bufferFile(projectFolder + '/json_test.json')
 
 this.client = undefined
 
@@ -31,6 +31,7 @@ app.get('/results/:page/:limit', function(req, res) {
         count: jsonDB.count(),
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
+        pageCount: Math.ceil(jsonDB.count() / jsonDB.per_page),
         pagedResults: jsonDB.getPage(page, limit)
       }
   res.status(200).json(jsonOut)
@@ -51,36 +52,41 @@ app.post('/login', function (req, res) {
 })
 
 app.post('/search', function (req, res) {
-  // AB se test da file json:
-  jsonDB.write(fakeData).then(function(paged) {
-    res.status(200).json({
-      count: jsonDB.count(),
-      page: jsonDB.pageNum,
-      limit: jsonDB.per_page,
-      pagedResults: paged
-    })
-  }).catch(error => {
-    console.log('in catch! ' + error)
-    res.status(500).json({message: error})
-  })
-  // AB con ricerca:
-  // this.client.search(req.body, (err, results) => {
-  //   if (err) {
-  //     res.status(500).json({ message: err })
-  //   } else {
-    //  jsonDB.write(transformResponse(results)).then(function(paged) {
-    //     res.status(200).json({
-    //       count: jsonDB.count(),
-    //       pagedResults: paged
-    //     })
-    //   }).catch(error => {
-    //     console.log('in catch! ' + error)
-    //     res.status(500).json({message: error})
-    //   })
-
-  //     // res.json(transformResponse(results))
-  //   }
+  // if using physical json file:
+  // jsonDB.write(fakeData).then(function(paged) {
+  //   res.status(200).json({
+  //     count: jsonDB.count(),
+  //     page: jsonDB.pageNum,
+  //     limit: jsonDB.per_page,
+  //     pagedResults: paged
+  //   })
+  // }).catch(error => {
+  //   console.log('in catch! ' + error)
+  //   res.status(500).json({message: error})
   // })
+
+  // AB storing into memory db the actual results from slsk client:
+  this.client.search(req.body, (err, results) => {
+    if (err) {
+      res.status(500).json({ message: err })
+    } else {
+     jsonDB.write(transformResponse(results)).then(function(paged) {
+        //console.log('db contains ' + jsonDB.count())
+        console.log('pagine totali: ' + Math.ceil(jsonDB.count() / jsonDB.per_page))
+        res.status(200).json({
+          count: jsonDB.count(),
+          page: jsonDB.pageNum,
+          pageCount: Math.ceil(jsonDB.count() / jsonDB.per_page),
+          limit: jsonDB.per_page,
+          pagedResults: paged
+        })
+      }).catch(error => {
+        res.status(500).json({message: error})
+      })
+
+      // res.json(transformResponse(results))
+    }
+  })
 })
 
 app.get('/play/:key', function (req, res) {

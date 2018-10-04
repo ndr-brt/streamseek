@@ -24,7 +24,7 @@ let groupByFolder = (acc, it) => {
   let file = {
     key: Buffer.from(it.user + '|' + it.file).toString('base64'),
     file: it.file,
-    size: it.size,
+    size: Math.trunc(it.size / 1024),
     bitrate: it.bitrate,
     name: descriptor.name
   }
@@ -49,7 +49,7 @@ let newFolder = (folderName, firstFile) => {
   return {
     name: folderName,
     user: firstFile.user,
-    speed: firstFile.speed,
+    speed: Math.trunc(firstFile.speed / 1024),
     slots: firstFile.slots,
     songs: [],
     images: [],
