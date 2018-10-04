@@ -2,10 +2,17 @@ var express = require('express')
 var app = express()
 const bodyParser = require('body-parser')
 const fs = require('fs')
+const path = require('path');
 const projectFolder = require('os').homedir().concat('/.streamseek')
 const login = require('./login')
 const transformResponse = require('./transform-response')
 var jsonDB = new (require('./jsondata'))()
+
+function bufferFile(absPath) {
+  return fs.readFileSync(absPath, { encoding: 'utf8' });
+}
+
+let fakeData = bufferFile(projectFolder + '/json_test.json')
 this.client = undefined
 
 app.use(function(req, res, next) {
@@ -17,12 +24,14 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json());
 
 app.get('/results/:page/:limit', function(req, res) {
-  console.log('in route results/' + req.param.page + '/' + req.param.limit)
-  let page = req.param.page || 1,
-      limit = req.param.limit || 10,
+  console.log('in route results/' + req.params.page + '/' + req.params.limit)
+  let page = req.params.page || 1,
+      limit = req.params.limit || 10,
       jsonOut = {
-        totalResults: jsonDB.count(),
-        results: jsonDB.getPage(page, limit)
+        count: jsonDB.count(),
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10),
+        pagedResults: jsonDB.getPage(page, limit)
       }
   res.status(200).json(jsonOut)
 })
@@ -42,29 +51,40 @@ app.post('/login', function (req, res) {
 })
 
 app.post('/search', function (req, res) {
-  this.client.search(req.body, (err, results) => {
-    if (err) {
-      res.status(500).json({ message: err })
-    }
-    else {
-      jsonDB.db
-        .defaults(transformResponse(results))
-        .write().then(function() {
-          res.status(200).json({
-            count: jsonDB.count(),
-            pagedResults: jsonDB.getPage(1,10)
-          })
-        }).catch(error => {
-          res.status(500).json({message: error})
-        })
-      
-      // res.json(transformResponse(results))
-    }
+  // AB se test da file json:
+  jsonDB.write(fakeData).then(function(paged) {
+    res.status(200).json({
+      count: jsonDB.count(),
+      page: jsonDB.pageNum,
+      limit: jsonDB.per_page,
+      pagedResults: paged
+    })
+  }).catch(error => {
+    console.log('in catch! ' + error)
+    res.status(500).json({message: error})
   })
+  // AB con ricerca:
+  // this.client.search(req.body, (err, results) => {
+  //   if (err) {
+  //     res.status(500).json({ message: err })
+  //   } else {
+    //  jsonDB.write(transformResponse(results)).then(function(paged) {
+    //     res.status(200).json({
+    //       count: jsonDB.count(),
+    //       pagedResults: paged
+    //     })
+    //   }).catch(error => {
+    //     console.log('in catch! ' + error)
+    //     res.status(500).json({message: error})
+    //   })
+
+  //     // res.json(transformResponse(results))
+  //   }
+  // })
 })
 
 app.get('/play/:key', function (req, res) {
-  console.log('Request to play')
+  console.log('Request to play: ' + req.params.key)
   let request = Buffer.from(req.params.key, 'base64')
                       .toString('ascii')
                       .split('|')

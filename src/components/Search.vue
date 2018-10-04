@@ -5,7 +5,7 @@
       <b-row class="justify-content-center">
         <b-col class="col-9 col-lg-6 col-xl-4">
           <form @submit="onSubmit">
-            <b-input-group class="mb-4 mb-lg-5">
+            <b-input-group class="mb-3 mb-lg-4">
               <input class="form-control" type="text" v-model="search" placeholder="search" autofocus />
               <b-input-group-append>
                 <b-btn type="submit" variant="primary"><icon name="search"></icon></b-btn>
@@ -21,7 +21,7 @@
     </b-container>
     <div>
       <b-container>
-        <b-row class="my-3" v-if="results.count && results.count > 0">
+        <b-row class="my-4" v-if="results.count && results.count > 0">
           <b-col>
             <span>
             Found {{ results.count }} results.
@@ -31,11 +31,13 @@
 
         <b-pagination-nav
           align="center"
+          v-if="results.count && results.count > 0"
           size="md"
           :use-router="true"
           :link-gen="linkGen"
           :number-of-pages="Math.round(results.count / limit)"
           v-model="currentPage" />
+
         <div v-for="(folder, index) in results.pagedResults" v-bind:key="folder.folder" class="border bg-light rounded my-2">
           <b-row class="py-2">
 
@@ -67,9 +69,9 @@
 
             <b-col class="offset-1 offset-lg-0 col-11 col-lg-3 text-left">
             <ul>
-              <li><icon name="folder" class="icon-folder"></icon> {{ folder.songs.length }} songs</li>
-              <li><icon name="user" class="icon-user"></icon> {{ folder.user }}</li>
-              <li><icon name="dashboard" class="icon-speed"></icon> {{ Math.trunc(folder.speed / 1024) }} Kbps</li>
+              <li v-b-tooltip title="# of songs" placement="left"><icon name="folder" class="icon-folder"></icon> {{ folder.songs.length }} songs</li>
+              <li v-b-tooltip title="User" placement="left"><icon name="user" class="icon-user"></icon> {{ folder.user }}</li>
+              <li v-b-tooltip title="Speed" placement="left"><icon name="dashboard" class="icon-speed"></icon> {{ Math.trunc(folder.speed / 1024) }} Kbps</li>
             </ul>
             </b-col>
           </b-row>
@@ -95,8 +97,8 @@
 
                     <b-col class="d-flex align-items-center" cols="12" lg="3" align-self="end">
                       <ul>
-                        <li><icon name="file-audio-o" class="icon-size"></icon> {{ Math.trunc(song.size / 1024) }} KB<br/></li>
-                        <li><icon name="area-chart" class="icon-chart"></icon> {{ song.bitrate }} bps</li>
+                        <li v-b-tooltip title="File size" placement="left"><icon name="file-audio-o" class="icon-size"></icon> {{ Math.trunc(song.size / 1024) }} KB<br/></li>
+                        <li v-b-tooltip title="Bitrate" placement="left"><icon name="area-chart" class="icon-chart"></icon> {{ song.bitrate }} bps</li>
                       </ul>
                     </b-col>
                   </b-row>
@@ -106,6 +108,15 @@
             </b-collapse>
           </b-row>
         </div>
+
+        <b-pagination-nav
+          align="center"
+          v-if="results.count && results.count > 0"
+          size="md"
+          :use-router="true"
+          :link-gen="linkGen"
+          :number-of-pages="Math.round(results.count / limit)"
+          v-model="currentPage" />
 
       </b-container>
     </div>
@@ -141,10 +152,11 @@ export default {
   },
   watch: {
     '$route' (to, from) {
+      console.log('in watch')
       if (to.name === 'Results') {
         this.searching = true
         this.$http.get('/api' + to.path).then(response => {
-          console.log('richiesta ajax ok: ' + response.body.totalResults)
+          console.log('richiesta ajax ok: ' + response.body.count)
           this.results = response.body
           this.searching = false
         }, response => {
@@ -162,7 +174,6 @@ export default {
         req: this.search,
         timeout: 2000
       }
-
       this.searching = true
       this.$http.post('/api/search', body).then(response => {
         self.results = response.body
@@ -204,13 +215,8 @@ export default {
       this.players.push({
         queue: queue
       })
-
       // fetchSongs(this.$http, this.players).then(data => console.log('All songs fetched'))
     }
-
-  },
-  mounted (currentPage) {
-    console.log('page mounted!')
   }
 }
 
