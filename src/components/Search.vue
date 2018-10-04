@@ -69,9 +69,9 @@
 
             <b-col class="offset-1 offset-lg-0 col-11 col-lg-3 text-left">
             <ul>
-              <li><icon scale="1.5" v-b-tooltip title="Songs" placement="top" name="folder" class="icon-folder"></icon> {{ folder.songs.length }} songs</li>
-              <li><icon scale="1.5" v-b-tooltip title="User" placement="top" name="user" class="icon-user"></icon> {{ folder.user }}</li>
-              <li><icon scale="1.5" v-b-tooltip title="Speed" placement="top" name="dashboard" class="icon-speed"></icon> {{ Math.trunc(folder.speed / 1024) }} Kbps</li>
+              <li><icon scale="1.3" v-b-tooltip title="Songs" placement="top" name="folder" class="icon-folder"></icon> {{ folder.songs.length }} songs</li>
+              <li><icon scale="1.3" v-b-tooltip title="User" placement="top" name="user" class="icon-user"></icon> {{ folder.user }}</li>
+              <li><icon scale="1.3" v-b-tooltip title="Speed" placement="top" name="dashboard" class="icon-speed"></icon> {{ Math.trunc(folder.speed / 1024) }} Kbps</li>
             </ul>
             </b-col>
           </b-row>
@@ -97,8 +97,8 @@
 
                     <b-col class="d-flex align-items-center" cols="12" lg="3" align-self="end">
                       <ul>
-                        <li><icon scale="1.5" v-b-tooltip title="File size" placement="top" name="file-audio-o" class="icon-size"></icon> {{ Math.trunc(song.size / 1024) }} KB<br/></li>
-                        <li><icon scale="1.5" v-b-tooltip title="Bitrate" placement="top" name="area-chart" class="icon-chart"></icon> {{ song.bitrate }} bps</li>
+                        <li><icon scale="1.3" v-b-tooltip title="File size" placement="top" name="file-audio-o" class="icon-size"></icon> {{ Math.trunc(song.size / 1024) }} KB<br/></li>
+                        <li><icon scale="1.3" v-b-tooltip title="Bitrate" placement="top" name="area-chart" class="icon-chart"></icon> {{ song.bitrate }} bps</li>
                       </ul>
                     </b-col>
                   </b-row>
@@ -152,7 +152,6 @@ export default {
   },
   watch: {
     '$route' (to, from) {
-      console.log('in watch')
       if (to.name === 'Results') {
         this.searching = true
         this.$http.get('/api' + to.path).then(response => {
@@ -187,6 +186,7 @@ export default {
     linkGen (pageNum) {
       return '/results/' + pageNum + '/' + this.limit
     },
+
     play (user, song, images) {
       this.playAll(user, [ song ], images)
     },
