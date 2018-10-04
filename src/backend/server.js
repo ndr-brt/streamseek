@@ -42,26 +42,25 @@ app.post('/login', function (req, res) {
 })
 
 app.post('/search', function (req, res) {
-  console.log('Search request ' + req.body.req)
-  res.status(200).json({
-    count: jsonDB.count(),
-    pagedResults: jsonDB.getPage(1,10)
+  this.client.search(req.body, (err, results) => {
+    if (err) {
+      res.status(500).json({ message: err })
+    }
+    else {
+      jsonDB.db
+        .defaults(transformResponse(results))
+        .write().then(function() {
+          res.status(200).json({
+            count: jsonDB.count(),
+            pagedResults: jsonDB.getPage(1,10)
+          })
+        }).catch(error => {
+          res.status(500).json({message: error})
+        })
+      
+      // res.json(transformResponse(results))
+    }
   })
-  // this.client.search(req.body, (err, results) => {
-  //   if (err) {
-  //     res.status(500).json({ message: err })
-  //   }
-  //   else {
-  //     jsonDB.write(req.body.req, {
-  //       results: transformResponse(results)
-  //     })
-  //     res.status(200).json({
-  //       count: jsonDB.count(),
-  //       pagedResults: jsonDB.getPage(1,10)
-  //     })
-  //     // res.json(transformResponse(results))
-  //   }
-  // })
 })
 
 app.get('/play/:key', function (req, res) {
