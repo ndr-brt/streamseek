@@ -12,7 +12,7 @@
               </b-input-group-append>
             </b-input-group>
             <div class="overlay-spinner" v-if="searching">
-              <icon name="spinner" pulse></icon>
+              <icon scale="4" name="spinner" pulse></icon>
             </div>
             <span>{{ message }}</span>
           </form>
@@ -69,9 +69,9 @@
 
             <b-col class="offset-1 offset-lg-0 col-11 col-lg-3 text-left">
             <ul>
-              <li v-b-tooltip title="# of songs" placement="left"><icon name="folder" class="icon-folder"></icon> {{ folder.songs.length }} songs</li>
-              <li v-b-tooltip title="User" placement="left"><icon name="user" class="icon-user"></icon> {{ folder.user }}</li>
-              <li v-b-tooltip title="Speed" placement="left"><icon name="dashboard" class="icon-speed"></icon> {{ Math.trunc(folder.speed / 1024) }} Kbps</li>
+              <li><icon scale="1.5" v-b-tooltip title="Songs" placement="top" name="folder" class="icon-folder"></icon> {{ folder.songs.length }} songs</li>
+              <li><icon scale="1.5" v-b-tooltip title="User" placement="top" name="user" class="icon-user"></icon> {{ folder.user }}</li>
+              <li><icon scale="1.5" v-b-tooltip title="Speed" placement="top" name="dashboard" class="icon-speed"></icon> {{ Math.trunc(folder.speed / 1024) }} Kbps</li>
             </ul>
             </b-col>
           </b-row>
@@ -97,8 +97,8 @@
 
                     <b-col class="d-flex align-items-center" cols="12" lg="3" align-self="end">
                       <ul>
-                        <li v-b-tooltip title="File size" placement="left"><icon name="file-audio-o" class="icon-size"></icon> {{ Math.trunc(song.size / 1024) }} KB<br/></li>
-                        <li v-b-tooltip title="Bitrate" placement="left"><icon name="area-chart" class="icon-chart"></icon> {{ song.bitrate }} bps</li>
+                        <li><icon scale="1.5" v-b-tooltip title="File size" placement="top" name="file-audio-o" class="icon-size"></icon> {{ Math.trunc(song.size / 1024) }} KB<br/></li>
+                        <li><icon scale="1.5" v-b-tooltip title="Bitrate" placement="top" name="area-chart" class="icon-chart"></icon> {{ song.bitrate }} bps</li>
                       </ul>
                     </b-col>
                   </b-row>
@@ -282,7 +282,7 @@ button > svg {
   top:0;
   left:0;
   background: rgba(15,15,15, .5) none;
-  color: blue;
+  color: orange;
   z-index: 9999;
   width: 100%;
   height: 100%;

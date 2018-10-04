@@ -7,12 +7,12 @@ const projectFolder = require('os').homedir().concat('/.streamseek')
 const login = require('./login')
 const transformResponse = require('./transform-response')
 var jsonDB = new (require('./jsondata'))()
-
+// AB for testing only:
 function bufferFile(absPath) {
   return fs.readFileSync(absPath, { encoding: 'utf8' });
 }
-
 let fakeData = bufferFile(projectFolder + '/json_test.json')
+
 this.client = undefined
 
 app.use(function(req, res, next) {
