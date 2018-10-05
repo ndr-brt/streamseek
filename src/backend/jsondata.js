@@ -8,7 +8,6 @@ const projectFolder = require('os').homedir().concat(path.sep + '.streamseek')
 let jsonData = function () {
   this.db = low(new Memory())
   this.pageNum = 1
-  this.pageTot =
   this.per_page = 10
 }
 
