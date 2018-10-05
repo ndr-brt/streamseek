@@ -6,7 +6,8 @@ const path = require('path');
 const projectFolder = require('os').homedir().concat('/.streamseek')
 const login = require('./login')
 const transformResponse = require('./transform-response')
-var jsonDB = new (require('./jsondata'))()
+//var jsonDB = new (require('./jsondata'))()
+jsonDB = require('./jsondata')
 // AB for testing only:
 // function bufferFile(absPath) {
 //   return fs.readFileSync(absPath, { encoding: 'utf8' });
@@ -23,12 +24,15 @@ app.use(function(req, res, next) {
 
 app.use(bodyParser.json());
 
-app.get('/results/:page/:limit', function(req, res) {
+app.post('/results/:page/:limit', function(req, res) {
   console.log('in route results/' + req.params.page + '/' + req.params.limit)
+  jf (!jsonDB._dbs[req.body.username])
+    res.redirect('/search').end()
+  let dbInstance = jsonDB._dbs['req.body.username'].db
   let page = req.params.page || 1,
       limit = req.params.limit || jsonDB.per_page,
       jsonOut = {
-        count: jsonDB.count(),
+        count: jsonDB[dbInstance].count(),
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
         pageCount: Math.ceil(jsonDB.count() / jsonDB.per_page),
@@ -52,7 +56,7 @@ app.post('/login', function (req, res) {
 })
 
 app.post('/search', function (req, res) {
-  // if using physical json file:
+  // using physical json file:
   // jsonDB.write(fakeData).then(function(paged) {
   //   res.status(200).json({
   //     count: jsonDB.count(),

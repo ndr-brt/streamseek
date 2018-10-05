@@ -33,6 +33,9 @@ export default {
       let self = this
       this.$http.post('/api/login', this.credentials).then(response => {
         self.message = response.body.message
+        if ('localStorage' in window) {
+          localStorage.setItem('username', self.credentials.username)
+        }
         this.$router.push('/search')
       }, response => {
         self.message = response.body.message
