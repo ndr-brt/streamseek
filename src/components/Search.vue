@@ -51,7 +51,7 @@
                 <a :key="'play' + index" href="#" @click="playAll(folder, folder.songs)">
                   <icon name="play-circle-o" scale="2"></icon>
                 </a>
-              <b-btn v-b-toggle="'collapse-' + index" variant="outline-info btn-sm">
+              <b-btn v-bind:ref="'btn_expand_' + index" v-b-toggle="'collapse-' + index" variant="outline-info btn-sm">
                 <icon name="angle-down"></icon>
               </b-btn>
             </b-col>
@@ -160,8 +160,16 @@ export default {
     '$route' (to, from) {
       if (to.name === 'Results') {
         this.searching = true
+
+        // workaround to force collapsing of expanded divs when changing page
+        Object.values(this.$refs).forEach(function (el) {
+          el.forEach(function (btn) {
+            if (!btn.classList.contains('collapsed')) btn.click()
+          })
+        })
+
         this.$http.get('/api' + to.path).then(response => {
-          // console.log('XHR to /api' + to.path + ' returns ' + response.statusCode)
+          // console.log('XHR to /api' + to.path + ' done')
           // console.log(response.body.count)
           this.results = response.body
           this.currentPage = response.body.page
@@ -232,7 +240,6 @@ export default {
 </script>
 
 <style scoped>
-
 .border.bg-light.rounded {
   overflow-x: hidden;
 }

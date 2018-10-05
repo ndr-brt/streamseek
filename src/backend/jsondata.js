@@ -8,7 +8,7 @@ const projectFolder = require('os').homedir().concat(path.sep + '.streamseek')
 let jsonData = function () {
   this.db = low(new Memory())
   this.pageNum = 1
-  this.pageTot = 
+  this.pageTot =
   this.per_page = 10
 }
 
@@ -19,8 +19,8 @@ jsonData.prototype = {
     return new Promise((resolve, reject) => {
       if (!content) reject(new Error('Content not specified'))
       // Parsing physical json file:
-      // t.db.defaults(JSON.parse(content)).write()
-      
+      //t.db.defaults(JSON.parse(content)).write()
+
       // Parsing in memory search results:
       t.db.defaults( { results: content } ).write()
       resolve(t.getPage())

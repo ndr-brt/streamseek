@@ -52,7 +52,7 @@ app.post('/login', function (req, res) {
 })
 
 app.post('/search', function (req, res) {
-  // if using physical json file:
+  //if using physical json file:
   // jsonDB.write(fakeData).then(function(paged) {
   //   res.status(200).json({
   //     count: jsonDB.count(),
@@ -65,14 +65,14 @@ app.post('/search', function (req, res) {
   //   res.status(500).json({message: error})
   // })
 
-  // AB storing into memory db the actual results from slsk client:
+  // AB storing into memory db the actual search results:
   this.client.search(req.body, (err, results) => {
     if (err) {
       res.status(500).json({ message: err })
     } else {
      jsonDB.write(transformResponse(results)).then(function(paged) {
-        //console.log('db contains ' + jsonDB.count())
-        console.log('pagine totali: ' + Math.ceil(jsonDB.count() / jsonDB.per_page))
+        // console.log('db contains ' + jsonDB.count())
+        // console.log('pagine totali: ' + Math.ceil(jsonDB.count() / jsonDB.per_page))
         res.status(200).json({
           count: jsonDB.count(),
           page: jsonDB.pageNum,
