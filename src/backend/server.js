@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 app.get('/results/:page/:limit', function(req, res) {
   console.log('in route results/' + req.params.page + '/' + req.params.limit)
   let page = req.params.page || 1,
-      limit = req.params.limit || 10,
+      limit = req.params.limit || jsonDB.per_page,
       jsonOut = {
         count: jsonDB.count(),
         page: parseInt(page, 10),
@@ -52,11 +52,12 @@ app.post('/login', function (req, res) {
 })
 
 app.post('/search', function (req, res) {
-  //if using physical json file:
+  // if using physical json file:
   // jsonDB.write(fakeData).then(function(paged) {
   //   res.status(200).json({
   //     count: jsonDB.count(),
   //     page: jsonDB.pageNum,
+  //     pageCount: Math.ceil(jsonDB.count() / jsonDB.per_page),
   //     limit: jsonDB.per_page,
   //     pagedResults: paged
   //   })
@@ -65,14 +66,12 @@ app.post('/search', function (req, res) {
   //   res.status(500).json({message: error})
   // })
 
-  // AB storing into memory db the actual search results:
+  // storing into memory db the actual search results:
   this.client.search(req.body, (err, results) => {
     if (err) {
       res.status(500).json({ message: err })
     } else {
      jsonDB.write(transformResponse(results)).then(function(paged) {
-        // console.log('db contains ' + jsonDB.count())
-        // console.log('pagine totali: ' + Math.ceil(jsonDB.count() / jsonDB.per_page))
         res.status(200).json({
           count: jsonDB.count(),
           page: jsonDB.pageNum,
@@ -83,7 +82,6 @@ app.post('/search', function (req, res) {
       }).catch(error => {
         res.status(500).json({message: error})
       })
-
       // res.json(transformResponse(results))
     }
   })

@@ -191,6 +191,7 @@ export default {
       }
       this.searching = true
       this.$http.post('/api/search', body).then(response => {
+        self.limit = response.body.limit
         self.results = response.body
         this.searching = false
         this.$router.push('/results/' + response.body.page + '/' + response.body.limit)

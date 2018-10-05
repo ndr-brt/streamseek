@@ -18,7 +18,7 @@ jsonData.prototype = {
     return new Promise((resolve, reject) => {
       if (!content) reject(new Error('Content not specified'))
       // Parsing physical json file:
-      //t.db.defaults(JSON.parse(content)).write()
+      // t.db.defaults(JSON.parse(content)).write()
 
       // Parsing in memory search results:
       t.db.defaults( { results: content } ).write()
