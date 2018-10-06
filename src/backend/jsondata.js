@@ -15,6 +15,7 @@ module.exports = jsonDB = {
       per_page : 10
     }
   },
+  
   write: function (dbName, content) {
     !this.exists(dbName) && this._add(dbName)
     var t = this,
@@ -33,11 +34,13 @@ module.exports = jsonDB = {
   },
 
   all: function (db_idx) {
-    return this.exists(db_idx) && this._dbs[db_idx].db.get('results').value()
+    return this.exists(db_idx)
+          && this._dbs[db_idx].db.get('results').value()
   },
 
   count: function (db_idx) {
-    return this.exists(db_idx) && this._dbs[db_idx].db.get('results').size()
+    return this.exists(db_idx)
+          && this._dbs[db_idx].db.get('results').size()
   },
 
   getPage: function(dbName, start, limit) {
@@ -48,6 +51,7 @@ module.exports = jsonDB = {
     return this._dbs[dbName].db.get('results')
         .drop(offset).take(limit).value()
   },
+
   exists: function(dbName) {
     return this._dbs.hasOwnProperty(dbName)
   }
