@@ -8,6 +8,7 @@ const projectFolder = require('os').homedir().concat(path.sep + '.streamseek')
 module.exports = jsonDB = {
   _dbs : {},
   _add : function (dbName) {
+    console.log('adding ' + dbName)
     this._dbs[dbName] = {
       db : low(new Memory()),
       pageNum : 1,
@@ -15,35 +16,39 @@ module.exports = jsonDB = {
     }
   },
   write: function (dbName, content) {
-    if ( !this._dbs[dbName] )
-      this._add(dbName)
-    var t = this._dbs[dbName].db
-    t.setState({})
+    !this.exists(dbName) && this._add(dbName)
+    var t = this,
+        db = t._dbs[dbName].db
+    db.setState({})
     return new Promise((resolve, reject) => {
+      console.log('in promise storing ' + content.length + ' results')
       if (!content) reject(new Error('Content not specified'))
-      // Parsing physical json file:
+      // storing physical json file:
       // t.db.defaults(JSON.parse(content)).write()
-
-      // Parsing in memory search results:
-      t.defaults( { results: content } ).write()
-      resolve(t.getPage())
+      // storing in memory search results:
+      db.defaults( { results: content } ).write()
+      console.log('stored ' + t.count(dbName) + ' results')
+      resolve(t.getPage(dbName))
     })
   },
+
   all: function (db_idx) {
-    return this._dbs[db_idx].db.get('results').value()
+    return this.exists(db_idx) && this._dbs[db_idx].db.get('results').value()
   },
 
   count: function (db_idx) {
-    return this._dbs[db_idx].db.get('results').size()
+    return this.exists(db_idx) && this._dbs[db_idx].db.get('results').size()
   },
 
-  getPage: function (start, limit, dbName) {
-    start = start || this.pageNum
-    limit = limit || this.per_page
+  getPage: function(dbName, start, limit) {
+    if (!this.exists(dbName)) return false
+    start = start || this._dbs[dbName].pageNum
+    limit = limit || this._dbs[dbName].per_page
     var offset = (start - 1) * limit
     return this._dbs[dbName].db.get('results')
-        .drop(offset)
-        .take(limit)
-        .value()
+        .drop(offset).take(limit).value()
+  },
+  exists: function(dbName) {
+    return this._dbs.hasOwnProperty(dbName)
   }
 }

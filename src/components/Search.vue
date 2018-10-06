@@ -162,15 +162,15 @@ export default {
         this.searching = true
 
         // workaround to force collapsing of expanded divs when changing page
-        Object.values(this.$refs).forEach(function (el) {
-          el.forEach(function (btn) {
+        Object.values(this.$refs).forEach(el => {
+          el.forEach(btn => {
             if (!btn.classList.contains('collapsed')) btn.click()
           })
         })
-
-        this.$http.get('/api' + to.path).then(response => {
-          // console.log('XHR to /api' + to.path + ' done')
-          // console.log(response.body.count)
+        let reqBody = { username: localStorage.getItem('username') }
+        this.$http.post('/api' + to.path, reqBody).then(response => {
+          console.log('XHR to /api' + to.path + ' done')
+          console.log(response.body.count)
           this.results = response.body
           this.currentPage = response.body.page
           this.searching = false
@@ -187,7 +187,8 @@ export default {
       let self = this
       let body = {
         req: this.search,
-        timeout: 2000
+        timeout: 2000,
+        username: localStorage.getItem('username') || (new Date()).getTime()
       }
       this.searching = true
       this.$http.post('/api/search', body).then(response => {
