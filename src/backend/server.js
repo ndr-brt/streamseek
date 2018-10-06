@@ -6,8 +6,7 @@ const path = require('path');
 const projectFolder = require('os').homedir().concat('/.streamseek')
 const login = require('./login')
 const transformResponse = require('./transform-response')
-//var jsonDB = new (require('./jsondata'))()
-jsonDB = require('./jsondata')
+var jsonDB = require('./jsondata')
 // AB for testing only:
 // function bufferFile(absPath) {
 //   return fs.readFileSync(absPath, { encoding: 'utf8' });
@@ -30,7 +29,7 @@ app.post('/results/:page/:limit', (req, res) => {
     res.redirect('/search').end()
   let pagCnt = Math.ceil(jsonDB.count(req.body.username)
               / jsonDB._dbs[req.body.username].per_page)
-  if (0 === pagCnt) pagCnt = 1
+  if (1 > pagCnt) pagCnt = 1
   let page = req.params.page || 1,
       limit = req.params.limit || jsonDB.per_page,
       jsonOut = {
@@ -76,7 +75,7 @@ app.post('/search', function (req, res) {
   this.client.search(req.body, (err, results) => {
     if (err) {
       res.status(500).json({ message: err, type: typeof err })
-    } else {    
+    } else {
       jsonDB.write(req.body.username, transformResponse(results)).then(function(paged) {
         var pagCnt = Math.ceil(jsonDB.count(req.body.username)
                     / jsonDB._dbs[req.body.username].per_page)

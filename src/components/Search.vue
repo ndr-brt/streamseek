@@ -161,7 +161,7 @@ export default {
       if (to.name === 'Results') {
         this.searching = true
 
-        // workaround to force collapsing of expanded divs when changing page
+        // workaround to force collapsing of expanded folders when changing page
         Object.values(this.$refs).forEach(el => {
           el.forEach(btn => {
             if (!btn.classList.contains('collapsed')) btn.click()
@@ -169,8 +169,7 @@ export default {
         })
         let reqBody = { username: localStorage.getItem('username') }
         this.$http.post('/api' + to.path, reqBody).then(response => {
-          console.log('XHR to /api' + to.path + ' done')
-          console.log(response.body.count)
+          // console.log('XHR to /api' + to.path + ' done')
           this.results = response.body
           this.currentPage = response.body.page
           this.searching = false
