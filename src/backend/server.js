@@ -2,9 +2,16 @@ var express = require('express')
 var app = express()
 const bodyParser = require('body-parser')
 const fs = require('fs')
+const path = require('path');
 const projectFolder = require('os').homedir().concat('/.streamseek')
 const login = require('./login')
 const transformResponse = require('./transform-response')
+var jsonDB = new (require('./jsondata'))()
+// AB for testing only:
+// function bufferFile(absPath) {
+//   return fs.readFileSync(absPath, { encoding: 'utf8' });
+// }
+// let fakeData = bufferFile(projectFolder + '/json_test.json')
 
 this.client = undefined
 
@@ -16,6 +23,20 @@ app.use(function(req, res, next) {
 
 app.use(bodyParser.json());
 
+app.get('/results/:page/:limit', function(req, res) {
+  console.log('in route results/' + req.params.page + '/' + req.params.limit)
+  let page = req.params.page || 1,
+      limit = req.params.limit || jsonDB.per_page,
+      jsonOut = {
+        count: jsonDB.count(),
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10),
+        pageCount: Math.ceil(jsonDB.count() / jsonDB.per_page),
+        pagedResults: jsonDB.getPage(page, limit)
+      }
+  res.status(200).json(jsonOut)
+})
+
 app.post('/login', function (req, res) {
   console.log('Login request for user ' + req.body.username)
   login(req.body.username, req.body.password)
@@ -25,25 +46,49 @@ app.post('/login', function (req, res) {
       res.status(204).json({ message: 'client connected' })
     })
     .catch(err => {
-      console.log('Catched error ' + err);
-      res.status(500).json({ message: err.toString() })
+      console.log('Catched error ' + err)
+      res.status(401).json({ message: err.toString() })
     })
 })
 
 app.post('/search', function (req, res) {
-  console.log('Search request ' + req.body.req)
+  // if using physical json file:
+  // jsonDB.write(fakeData).then(function(paged) {
+  //   res.status(200).json({
+  //     count: jsonDB.count(),
+  //     page: jsonDB.pageNum,
+  //     pageCount: Math.ceil(jsonDB.count() / jsonDB.per_page),
+  //     limit: jsonDB.per_page,
+  //     pagedResults: paged
+  //   })
+  // }).catch(error => {
+  //   console.log('in catch! ' + error)
+  //   res.status(500).json({message: error})
+  // })
+
+  // storing into memory db the actual search results:
   this.client.search(req.body, (err, results) => {
     if (err) {
       res.status(500).json({ message: err })
-    }
-    else {
-      res.json(transformResponse(results))
+    } else {
+     jsonDB.write(transformResponse(results)).then(function(paged) {
+        res.status(200).json({
+          count: jsonDB.count(),
+          page: jsonDB.pageNum,
+          pageCount: Math.ceil(jsonDB.count() / jsonDB.per_page),
+          limit: jsonDB.per_page,
+          pagedResults: paged
+        })
+      }).catch(error => {
+        res.status(500).json({message: error})
+      })
+      // res.json(transformResponse(results))
     }
   })
 })
 
 app.get('/play/:key', function (req, res) {
-  console.log('Request to play')
+  console.log('Request to play: ' + req.params.key)
   let request = Buffer.from(req.params.key, 'base64')
                       .toString('ascii')
                       .split('|')
@@ -119,7 +164,6 @@ app.listen(9090, function () {
   else {
     console.log('Project folder ' + projectFolder + ' already exists')
   }
-
   console.log('slsk client listening on port 9090!')
 })
 

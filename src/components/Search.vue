@@ -5,13 +5,15 @@
       <b-row class="justify-content-center">
         <b-col class="col-9 col-lg-6 col-xl-4">
           <form @submit="onSubmit">
-            <b-input-group class="mb-4 mb-lg-5">
+            <b-input-group class="mb-3 mb-lg-4">
               <input class="form-control" type="text" v-model="search" placeholder="search" autofocus />
               <b-input-group-append>
                 <b-btn type="submit" variant="primary"><icon name="search"></icon></b-btn>
               </b-input-group-append>
             </b-input-group>
-            <icon name="spinner" pulse v-if="searching"></icon>
+            <div class="overlay-spinner" v-if="searching">
+              <icon scale="3" name="spinner" pulse></icon>
+            </div>
             <span>{{ message }}</span>
           </form>
         </b-col>
@@ -19,14 +21,37 @@
     </b-container>
     <div>
       <b-container>
-        <div v-for="(folder, index) in results" v-bind:key="folder.folder" class="border bg-light rounded my-2">
+
+        <b-pagination-nav
+          align="center"
+          v-if="results.count && results.count > 0"
+          size="md"
+          :use-router="true"
+          :link-gen="linkGen"
+          :number-of-pages="results.pageCount"
+          v-model="currentPage" />
+
+        <b-row class="mt-4 mb-1" v-if="results.count && results.count > 0">
+          <b-col class="col-12 col-lg-6 text-center text-lg-left">
+            <span>
+            {{ results.count }} results
+          </span>
+          </b-col>
+          <b-col class="col-12 col-lg-6 text-center text-lg-right">
+            <span>
+              page {{ currentPage }} of {{ results.pageCount }}
+            </span>
+          </b-col>
+        </b-row>
+
+        <div v-for="(folder, index) in results.pagedResults" v-bind:key="folder.folder" class="border bg-light rounded my-2">
           <b-row class="py-2">
 
             <b-col class="col-2 col-lg-1 col-actions flex-column">
                 <a :key="'play' + index" href="#" @click="playAll(folder, folder.songs)">
                   <icon name="play-circle-o" scale="2"></icon>
                 </a>
-              <b-btn v-b-toggle="'collapse-' + index" variant="outline-info btn-sm">
+              <b-btn v-bind:ref="'btn_expand_' + index" v-b-toggle="'collapse-' + index" variant="outline-info btn-sm">
                 <icon name="angle-down"></icon>
               </b-btn>
             </b-col>
@@ -49,17 +74,10 @@
             </b-col>
 
             <b-col class="offset-1 offset-lg-0 col-11 col-lg-3 text-left">
-              <!--
-              <p align="left">
-                <i>Songs:</i> {{ folder.songs.length }} <br/>
-                <i>User:</i> {{ folder.user }}<br />
-                <i>Speed:</i> {{ Math.trunc(folder.speed / 1024) }} Kbps
-              </p>
-            -->
             <ul>
-              <li><i>Songs:</i> {{ folder.songs.length }}</li>
-              <li><i>User:</i> {{ folder.user }}</li>
-              <li><i>Speed:</i> {{ Math.trunc(folder.speed / 1024) }} Kbps</li>
+              <li><icon scale="1.3" v-b-tooltip title="Songs" placement="top" name="folder" class="icon-folder"></icon> {{ folder.songs.length }} songs</li>
+              <li><icon scale="1.3" v-b-tooltip title="User" placement="top" name="user" class="icon-user"></icon> {{ folder.user }}</li>
+              <li><icon scale="1.3" v-b-tooltip title="Speed" placement="top" name="dashboard" class="icon-speed"></icon> {{ folder.speed }} Kbps</li>
             </ul>
             </b-col>
           </b-row>
@@ -85,8 +103,8 @@
 
                     <b-col class="d-flex align-items-center" cols="12" lg="3" align-self="end">
                       <ul>
-                        <li><i>Size:</i> {{ Math.trunc(song.size / 1024) }} KB<br/></li>
-                        <li><i>Bitrate:</i> {{ song.bitrate }} bps</li>
+                        <li><icon scale="1.3" v-b-tooltip title="File size" placement="top" name="file-audio-o" class="icon-size"></icon> {{ song.size }} KB<br/></li>
+                        <li><icon scale="1.3" v-b-tooltip title="Bitrate" placement="top" name="area-chart" class="icon-chart"></icon> {{ song.bitrate }} bps</li>
                       </ul>
                     </b-col>
                   </b-row>
@@ -96,6 +114,16 @@
             </b-collapse>
           </b-row>
         </div>
+
+        <b-pagination-nav
+          align="center"
+          v-if="results.count && results.count > 0"
+          size="md"
+          :use-router="true"
+          :link-gen="linkGen"
+          :number-of-pages="results.pageCount"
+          v-model="currentPage" />
+
       </b-container>
     </div>
 
@@ -109,16 +137,48 @@
 <script>
 import Aplayer from 'vue-aplayer'
 
+// import jsonData from '../backend/jsondata'
+// var jsonData = require('../backend/jsondata')
+// console.log(typeof jsonData)
 export default {
   name: 'Search',
-  components: { Aplayer },
+  components: {
+    Aplayer: Aplayer
+  },
   data () {
     return {
       search: '',
       searching: false,
       message: '',
-      results: [],
+      currentPage: 1,
+      limit: 10,
+      results: [], // jsonData.getPage(1, 10),
       players: []
+    }
+  },
+  watch: {
+    '$route' (to, from) {
+      if (to.name === 'Results') {
+        this.searching = true
+
+        // workaround to force collapsing of expanded divs when changing page
+        Object.values(this.$refs).forEach(function (el) {
+          el.forEach(function (btn) {
+            if (!btn.classList.contains('collapsed')) btn.click()
+          })
+        })
+
+        this.$http.get('/api' + to.path).then(response => {
+          // console.log('XHR to /api' + to.path + ' done')
+          // console.log(response.body.count)
+          this.results = response.body
+          this.currentPage = response.body.page
+          this.searching = false
+        }, response => {
+          this.message = response.body.message
+          this.searching = false
+        })
+      }
     }
   },
   methods: {
@@ -129,16 +189,20 @@ export default {
         req: this.search,
         timeout: 2000
       }
-
       this.searching = true
       this.$http.post('/api/search', body).then(response => {
-        console.log(response.body.length)
+        self.limit = response.body.limit
         self.results = response.body
         this.searching = false
+        this.$router.push('/results/' + response.body.page + '/' + response.body.limit)
       }, response => {
         self.message = response.body.message
         this.searching = false
       })
+    },
+
+    linkGen (pageNum) {
+      return '/results/' + pageNum + '/' + this.limit
     },
 
     play (user, song, images) {
@@ -169,16 +233,14 @@ export default {
       this.players.push({
         queue: queue
       })
-
       // fetchSongs(this.$http, this.players).then(data => console.log('All songs fetched'))
     }
-
   }
 }
+
 </script>
 
 <style scoped>
-
 .border.bg-light.rounded {
   overflow-x: hidden;
 }
@@ -190,6 +252,11 @@ ul {
 ul li {
   list-style: none;
   text-align: left;
+}
+.icon-user, .icon-folder, .icon-speed,
+.icon-chart, .icon-size {
+  vertical-align: sub;
+  margin-right: 10px;
 }
 button > svg {
   vertical-align:middle;
@@ -226,5 +293,18 @@ button > svg {
 .btn-outline-info {
   display: flex;
   align-self: center;
+}
+.overlay-spinner {
+  position: fixed;
+  top:0;
+  left:0;
+  background: rgba(15,15,15, .5) none;
+  color: orange;
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center
 }
 </style>

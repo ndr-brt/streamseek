@@ -31,4 +31,8 @@ export default {
   font-size: 1.3rem;
   margin-bottom: 35px;
 }
+ul.simple-links-container li {
+  list-style: none;
+  display: inline-block
+}
 </style>
