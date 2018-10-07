@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <b-container>
+    <b-container class="search-form">
       <b-row class="justify-content-center">
         <b-col class="col-9 col-lg-6 col-xl-4">
           <form @submit="onSubmit">
@@ -12,7 +12,7 @@
               </b-input-group-append>
             </b-input-group>
             <div class="overlay-spinner" v-if="searching">
-              <icon scale="3" name="spinner" pulse></icon>
+              <icon scale="2.3" name="spinner" pulse></icon>
             </div>
             <span>{{ message }}</span>
           </form>
@@ -161,16 +161,15 @@ export default {
       if (to.name === 'Results') {
         this.searching = true
 
-        // workaround to force collapsing of expanded divs when changing page
-        Object.values(this.$refs).forEach(function (el) {
-          el.forEach(function (btn) {
+        // workaround to force collapsing of expanded folders when changing page
+        Object.values(this.$refs).forEach(el => {
+          el.forEach(btn => {
             if (!btn.classList.contains('collapsed')) btn.click()
           })
         })
-
-        this.$http.get('/api' + to.path).then(response => {
+        let reqBody = { username: localStorage.getItem('username') }
+        this.$http.post('/api' + to.path, reqBody).then(response => {
           // console.log('XHR to /api' + to.path + ' done')
-          // console.log(response.body.count)
           this.results = response.body
           this.currentPage = response.body.page
           this.searching = false
@@ -187,7 +186,8 @@ export default {
       let self = this
       let body = {
         req: this.search,
-        timeout: 2000
+        timeout: 2000,
+        username: localStorage.getItem('username') || (new Date()).getTime()
       }
       this.searching = true
       this.$http.post('/api/search', body).then(response => {
@@ -298,13 +298,24 @@ button > svg {
   position: fixed;
   top:0;
   left:0;
-  background: rgba(15,15,15, .5) none;
-  color: orange;
+  background: rgba(15,15,15, .4) none;
+  color: cyan;
   z-index: 9999;
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center
+}
+.search-form .btn-primary:focus {
+  box-shadow: none;
+}
+.search-form input[type="text"]:focus,
+.search-form input[type="text"]:active,
+.search-form input[type="text"]:focus:active,
+.search-form input[type="text"]:active:focus {
+  box-shadow: none;
+  background-color: rgba(128, 189, 255, .2);
+  color: darkblue
 }
 </style>

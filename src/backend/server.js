@@ -6,7 +6,7 @@ const path = require('path');
 const projectFolder = require('os').homedir().concat('/.streamseek')
 const login = require('./login')
 const transformResponse = require('./transform-response')
-var jsonDB = new (require('./jsondata'))()
+var jsonDB = require('./jsondata')
 // AB for testing only:
 // function bufferFile(absPath) {
 //   return fs.readFileSync(absPath, { encoding: 'utf8' });
@@ -23,16 +23,21 @@ app.use(function(req, res, next) {
 
 app.use(bodyParser.json());
 
-app.get('/results/:page/:limit', function(req, res) {
+app.post('/results/:page/:limit', (req, res) => {
   console.log('in route results/' + req.params.page + '/' + req.params.limit)
+  if (!jsonDB.exists(req.body.username))
+    res.redirect('/search').end()
+  let pagCnt = Math.ceil(jsonDB.count(req.body.username)
+              / jsonDB._dbs[req.body.username].per_page)
+  if (1 > pagCnt) pagCnt = 1
   let page = req.params.page || 1,
       limit = req.params.limit || jsonDB.per_page,
       jsonOut = {
-        count: jsonDB.count(),
+        count: jsonDB.count(req.body.username),
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
-        pageCount: Math.ceil(jsonDB.count() / jsonDB.per_page),
-        pagedResults: jsonDB.getPage(page, limit)
+        pageCount: pagCnt,
+        pagedResults: jsonDB.getPage(req.body.username, page, limit)
       }
   res.status(200).json(jsonOut)
 })
@@ -52,7 +57,7 @@ app.post('/login', function (req, res) {
 })
 
 app.post('/search', function (req, res) {
-  // if using physical json file:
+  // using physical json file:
   // jsonDB.write(fakeData).then(function(paged) {
   //   res.status(200).json({
   //     count: jsonDB.count(),
@@ -66,21 +71,25 @@ app.post('/search', function (req, res) {
   //   res.status(500).json({message: error})
   // })
 
-  // storing into memory db the actual search results:
+  // using ram to store the actual search results:
   this.client.search(req.body, (err, results) => {
     if (err) {
-      res.status(500).json({ message: err })
+      res.status(500).json({ message: err, type: typeof err })
     } else {
-     jsonDB.write(transformResponse(results)).then(function(paged) {
+      jsonDB.write(req.body.username, transformResponse(results)).then(function(paged) {
+        var pagCnt = Math.ceil(jsonDB.count(req.body.username)
+                    / jsonDB._dbs[req.body.username].per_page)
+        if (0 === pagCnt) pagCnt = 1
         res.status(200).json({
-          count: jsonDB.count(),
-          page: jsonDB.pageNum,
-          pageCount: Math.ceil(jsonDB.count() / jsonDB.per_page),
-          limit: jsonDB.per_page,
+          count: jsonDB.count(req.body.username),
+          page: jsonDB._dbs[req.body.username].pageNum,
+          pageCount: pagCnt,
+          limit: jsonDB._dbs[req.body.username].per_page,
           pagedResults: paged
         })
       }).catch(error => {
-        res.status(500).json({message: error})
+        console.log(error)
+        res.status(500).json({message: error, type:'catch! ' + typeof err})
       })
       // res.json(transformResponse(results))
     }
