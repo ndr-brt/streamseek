@@ -72,6 +72,8 @@ app.post('/search', function (req, res) {
   // })
 
   // using ram to store the actual search results:
+  if (undefined === this.client)
+    res.redirect('/').end()
   this.client.search(req.body, (err, results) => {
     if (err) {
       res.status(500).json({ message: err, type: typeof err })

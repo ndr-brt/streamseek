@@ -15,7 +15,7 @@ module.exports = jsonDB = {
       per_page : 10
     }
   },
-  
+
   write: function (dbName, content) {
     !this.exists(dbName) && this._add(dbName)
     var t = this,

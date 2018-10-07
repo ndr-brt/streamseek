@@ -34,7 +34,7 @@ export default {
       this.$http.post('/api/login', this.credentials).then(response => {
         self.message = response.body.message
         if ('localStorage' in window) {
-          localStorage.setItem('username', self.credentials.username)
+          localStorage.setItem('streamseek_username', self.credentials.username)
         }
         this.$router.push('/search')
       }, response => {

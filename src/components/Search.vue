@@ -294,28 +294,5 @@ button > svg {
   display: flex;
   align-self: center;
 }
-.overlay-spinner {
-  position: fixed;
-  top:0;
-  left:0;
-  background: rgba(15,15,15, .4) none;
-  color: cyan;
-  z-index: 9999;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center
-}
-.search-form .btn-primary:focus {
-  box-shadow: none;
-}
-.search-form input[type="text"]:focus,
-.search-form input[type="text"]:active,
-.search-form input[type="text"]:focus:active,
-.search-form input[type="text"]:active:focus {
-  box-shadow: none;
-  background-color: rgba(128, 189, 255, .2);
-  color: darkblue
-}
+
 </style>
