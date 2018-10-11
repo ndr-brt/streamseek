@@ -45,12 +45,6 @@ export default {
 }
 </script>
 
-<style scoped>
-form {
-  margin: 24px auto;
-}
-form input[type='text'] {
-  margin: 15px 0;
-}
-
+<style scoped lang="sass">
+@import "./login.scss";
 </style>

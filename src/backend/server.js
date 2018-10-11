@@ -24,9 +24,7 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json());
 
 app.post('/results/:page/:limit', (req, res) => {
-  console.log('in route results/' + req.params.page + '/' + req.params.limit)
-  if (!jsonDB.exists(req.body.username))
-    res.redirect('/search').end()
+  //console.log(req.body.username + ' in route results/' + req.params.page + '/' + req.params.limit)
   let pagCnt = Math.ceil(jsonDB.count(req.body.username)
               / jsonDB._dbs[req.body.username].per_page)
   if (1 > pagCnt) pagCnt = 1
@@ -51,19 +49,22 @@ app.post('/login', function (req, res) {
       res.status(204).json({ message: 'client connected' })
     })
     .catch(err => {
-      console.log('Catched error ' + err)
+      console.log('/login Catched error ' + err)
       res.status(401).json({ message: err.toString() })
     })
 })
 
 app.post('/search', function (req, res) {
-  // using physical json file:
-  // jsonDB.write(fakeData).then(function(paged) {
+  // TESTING ONLY! using physical json file:
+  // jsonDB.write(req.body.username, fakeData).then(function(paged) {
+  //   var pagCnt = Math.ceil(jsonDB.count(req.body.username)
+  //             / jsonDB._dbs[req.body.username].per_page)
+  //   if (0 === pagCnt) pagCnt = 1
   //   res.status(200).json({
-  //     count: jsonDB.count(),
-  //     page: jsonDB.pageNum,
-  //     pageCount: Math.ceil(jsonDB.count() / jsonDB.per_page),
-  //     limit: jsonDB.per_page,
+  //     count: jsonDB.count(req.body.username),
+  //     page: jsonDB._dbs[req.body.username].pageNum,
+  //     pageCount: pagCnt,
+  //     limit: jsonDB._dbs[req.body.username].per_page,
   //     pagedResults: paged
   //   })
   // }).catch(error => {
@@ -72,8 +73,6 @@ app.post('/search', function (req, res) {
   // })
 
   // using ram to store the actual search results:
-  if (undefined === this.client)
-    res.redirect('/').end()
   this.client.search(req.body, (err, results) => {
     if (err) {
       res.status(500).json({ message: err, type: typeof err })

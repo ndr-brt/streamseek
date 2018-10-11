@@ -1,0 +1,58 @@
+.border.bg-light.rounded {
+  overflow-x: hidden;
+}
+
+ul {
+  margin-bottom: 0;
+  li {
+    list-style: none;
+    text-align: left;
+  }
+}
+
+.icon-user, .icon-folder, .icon-speed,
+.icon-chart, .icon-size {
+  vertical-align: sub;
+  margin-right: 10px;
+}
+button > svg {
+  vertical-align:middle;
+}
+.collapse-wrapper {
+  ul {
+    margin: 10px 0;
+  }
+  p {
+    margin-bottom:0;
+  }
+  > .container:nth-child(even) .row {
+    background: #eee none;
+  }
+  > .container:nth-child(odd) .row {
+    background: #ddd none;
+  }
+}
+
+.col-actions {
+  display: flex;
+  justify-content: space-between;
+  a:link, a:visited {
+    display: block;
+  }
+  .btn-outline-info {
+    display: flex;
+    align-self: center;
+  }
+
+}
+
+@media screen and (max-width: 991px) {
+  ul li {
+    display:inline-block;
+    font-size:12px;
+    &:not(:first-child)::before {
+      content: "|";
+      margin: 0 10px;
+    }
+  }
+}

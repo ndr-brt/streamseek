@@ -167,7 +167,7 @@ export default {
             if (!btn.classList.contains('collapsed')) btn.click()
           })
         })
-        let reqBody = { username: localStorage.getItem('username') }
+        let reqBody = { username: localStorage.getItem('streamseek_username') }
         this.$http.post('/api' + to.path, reqBody).then(response => {
           // console.log('XHR to /api' + to.path + ' done')
           this.results = response.body
@@ -183,11 +183,12 @@ export default {
   methods: {
     onSubmit (evt) {
       evt.preventDefault()
+      // console.log('username: ' + localStorage.getItem('streamseek_username'))
       let self = this
       let body = {
         req: this.search,
         timeout: 2000,
-        username: localStorage.getItem('username') || (new Date()).getTime()
+        username: localStorage.getItem('streamseek_username') || (new Date()).getTime()
       }
       this.searching = true
       this.$http.post('/api/search', body).then(response => {
@@ -233,6 +234,8 @@ export default {
       this.players.push({
         queue: queue
       })
+      this.players.length > 1 && this.players.shift()
+
       // fetchSongs(this.$http, this.players).then(data => console.log('All songs fetched'))
     }
   }
@@ -240,59 +243,6 @@ export default {
 
 </script>
 
-<style scoped>
-.border.bg-light.rounded {
-  overflow-x: hidden;
-}
-
-ul {
-  margin-bottom: 0;
-}
-
-ul li {
-  list-style: none;
-  text-align: left;
-}
-.icon-user, .icon-folder, .icon-speed,
-.icon-chart, .icon-size {
-  vertical-align: sub;
-  margin-right: 10px;
-}
-button > svg {
-  vertical-align:middle;
-}
-.collapse-wrapper ul {
-  margin: 10px 0;
-}
-.collapse-wrapper p {
-  margin-bottom:0;
-}
-.collapse-wrapper > .container:nth-child(even) .row {
-  background: #eee none;
-}
-.collapse-wrapper > .container:nth-child(odd) .row {
-  background: #ddd none;
-}
-@media screen and (max-width: 991px) {
-  ul li {
-    display:inline-block;
-    font-size:12px;
-  }
-  ul li:not(:first-child)::before {
-    content: "|";
-    margin: 0 10px;
-  }
-}
-.col-actions {
-  display: flex;
-  justify-content: space-between;
-}
-.col-actions a:link, .col-actions a:visited {
-  display: block;
-}
-.btn-outline-info {
-  display: flex;
-  align-self: center;
-}
-
+<style scoped lang="sass">
+@import "./search.scss";
 </style>

@@ -25,7 +25,8 @@ module.exports = jsonDB = {
       console.log('in promise storing ' + content.length + ' results')
       if (!content) reject(new Error('Content not specified'))
       // storing physical json file:
-      // t.db.defaults(JSON.parse(content)).write()
+      // db.defaults(JSON.parse(content)).write()
+      
       // storing in memory search results:
       db.defaults( { results: content } ).write()
       console.log('stored ' + t.count(dbName) + ' results')
