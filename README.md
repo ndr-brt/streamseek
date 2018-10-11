@@ -12,11 +12,5 @@ npm install
 npm start
 
 # launch electron frontend
-node_modules/electron/dist/electron .
+npm run frontend
 ```
-
-### TODO
- - add a spinner while is fetching the first song
- - make the first song play directly from peer, and make than fetch it later
- - clean old players
- - file sharing (to be implemented in the client library)
