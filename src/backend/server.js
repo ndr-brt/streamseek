@@ -29,7 +29,7 @@ app.post('/results/:page/:limit', (req, res) => {
               / jsonDB.getProp("per_page", req.body.username))
   if (1 > pagCnt) pagCnt = 1
   let page = req.params.page || 1,
-      limit = req.params.limit || jsonDB.per_page,
+      limit = req.params.limit || jsonDB.getProp("per_page", req.body.username),
       jsonOut = {
         count: jsonDB.count(req.body.username),
         page: parseInt(page, 10),
