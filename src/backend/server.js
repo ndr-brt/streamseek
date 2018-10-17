@@ -144,21 +144,28 @@ app.get('/fetch/:file', function (req, res) {
                       .toString('ascii')
                       .split('|')
   console.log('Fetch from user ' + request[0] + ' this song: ' + request[1])
-  this.client.downloadStream({
-      file: {
-        user: request[0],
-        file: request[1]
-      }
-    }, (err, data) => {
-      if (err) {
-        console.log(err)
-        res.status(500).json({ message: err })
-      }
-      else {
-        fetch(request[1], data)
-        res.status(200).json({ message: 'Fetch for ' + request[1] + ' started'})
-      }
-    })
+  fs.stat(prefetch, (err, stats) => {
+    if (!err && stats.size > 0) {
+      console.log(`File ${request[1]} already fetched`)
+    }
+    else {
+      this.client.downloadStream({
+        file: {
+          user: request[0],
+          file: request[1]
+        }
+      }, (err, data) => {
+        if (err) {
+          console.log(err)
+          res.status(500).json({ message: err })
+        }
+        else {
+          fetch(request[1], data)
+          res.status(200).json({ message: 'Fetch for ' + request[1] + ' started'})
+        }
+      })
+    }
+  })
 })
 
 app.listen(9090, function () {
