@@ -220,23 +220,15 @@ export default {
         }
       })
 
-      // async function fetchSongs (http, players) {
-      //   console.log('Start fetching all the songs')
-      //
-      //   for (var index = 0; index < songs.length; ++index) {
-      //     var song = songs[index]
-      //     console.log('Fetch ' + song.name)
-      //     await http.get('/api/fetch/' + song.key)
-      //   }
-      // }
+      songs.forEach(song => {
+        console.log('Fetch ' + song.name)
+        this.$http.get('/api/fetch/' + song.key)
+      })
 
-      console.log('First song fetched, let\'s add player!')
       this.players.push({
         queue: queue
       })
       this.players.length > 1 && this.players.shift()
-
-      // fetchSongs(this.$http, this.players).then(data => console.log('All songs fetched'))
     }
   }
 }

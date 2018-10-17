@@ -103,38 +103,40 @@ app.get('/play/:key', function (req, res) {
                       .toString('ascii')
                       .split('|')
   let prefetch = projectFolder.concat('/').concat(request[1])
-  if (fs.existsSync(prefetch)) {
-    console.log('Prefetch file exists: ' + prefetch)
-    var stream = fs.createReadStream(prefetch)
-    stream.on('data', chunk => res.write(chunk))
-    stream.on('end', () => res.end())
-  } else {
-    console.log('Prefetch not exists, get: ' + request[1] + ' directly from peer')
-    this.client.downloadStream({
-        file: {
-          user: request[0],
-          file: request[1]
-        },
-      }, (err, data) => {
-        if (err) {
-          console.log(err)
-          res.status(500).json({ message: err })
-        }
-        else {
-          console.log('Start getting data')
-          var file = fs.createWriteStream(projectFolder.concat('/').concat(request[1]))
-          data.on('data', chunk => {
-            res.write(chunk)
-            file.write(chunk)
-          })
-          data.on('end', () => {
-            console.log('File fetched')
-            res.end()
-            file.end()
-          })
-        }
-      })
-  }
+  fs.stat(prefetch, (err, stats) => {
+    if (!err && stats.size > 0) {
+      console.log('Prefetch file exists: ' + prefetch)
+      var stream = fs.createReadStream(prefetch)
+      stream.on('data', chunk => res.write(chunk))
+      stream.on('end', () => res.end())
+    } else {
+      console.log('Prefetch not exists, get: ' + request[1] + ' directly from peer')
+      this.client.downloadStream({
+          file: {
+            user: request[0],
+            file: request[1]
+          },
+        }, (err, data) => {
+          if (err) {
+            console.log(err)
+            res.status(500).json({ message: err })
+          }
+          else {
+            console.log('Start getting data')
+            var file = fs.createWriteStream(projectFolder.concat('/').concat(request[1]))
+            data.on('data', chunk => {
+              res.write(chunk)
+              file.write(chunk)
+            })
+            data.on('end', () => {
+              console.log('File fetched')
+              res.end()
+              file.end()
+            })
+          }
+        })
+    }
+  })
 })
 
 app.get('/fetch/:file', function (req, res) {
@@ -153,15 +155,8 @@ app.get('/fetch/:file', function (req, res) {
         res.status(500).json({ message: err })
       }
       else {
-        var file = fs.createWriteStream(projectFolder.concat('/').concat(request[1]))
-
-        data.on('data', chunk => file.write(chunk))
-
-        data.on('end', function () {
-          file.end()
-          console.log('File ' + request[1] + ' fetched correctly')
-          res.status(200).json({ message: request[1] + ' fetched'})
-        })
+        fetch(request[1], data)
+        res.status(200).json({ message: 'Fetch for ' + request[1] + ' started'})
       }
     })
 })
@@ -180,3 +175,14 @@ app.listen(9090, function () {
 app.on('error', (err) => {
   console.log('whoops! there was an error', err.stack);
 })
+
+let fetch = async (key, data) => {
+  var file = fs.createWriteStream(projectFolder.concat('/').concat(key))
+
+  data.on('data', chunk => file.write(chunk))
+
+  data.on('end', function () {
+    file.end()
+    console.log(`File ${key} fetched correctly`)
+  })
+}

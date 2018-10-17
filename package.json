@@ -22,7 +22,7 @@
     "hls.js": "^0.9.1",
     "lowdb": "^1.0.0",
     "npm": "^6.0.0",
-    "slsk-client": "^1.0.9",
+    "slsk-client": "^1.0.10",
     "vue": "^2.5.2",
     "vue-aplayer": "^1.6.0",
     "vue-awesome": "^2.3.6",
